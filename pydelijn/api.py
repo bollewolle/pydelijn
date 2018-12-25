@@ -15,6 +15,7 @@ from .common import BASE_URL, LOGGER
 
 class Passages():
     """A class to get passage information."""
+
     def __init__(self,
                  loop,
                  stopid,
@@ -118,24 +119,42 @@ class Passages():
                     linenumbercolourbackborderhex = colourshex.get(str(linenumbercolourbackborder))
 
                     passages.append({
-                        'stopname': stopname,
-                        'line_number': linenumber,
-                        'direction': direction,
-                        'final_destination': final_destination,
-                        'due_at_sch': due_at_sch,
-                        'due_at_rt': due_at_rt,
-                        'due_in_min': due_in_min,
-                        'line_number_public': linenumberpublic,
-                        'line_desc': linedesc,
-                        'line_transport_type': linetransporttype,
-                        'line_number_colourFront': linenumbercolourfront,
-                        'line_number_colourFrontHex': linenumbercolourfronthex,
-                        'line_number_colourBack': linenumbercolourback,
-                        'line_number_colourBackHex': linenumbercolourbackhex,
-                        'line_number_colourFrontBorder': linenumbercolourfrontborder,
-                        'line_number_colourFrontBorderHex': linenumbercolourfrontborderhex,
-                        'line_number_colourBackBorder': linenumbercolourbackborder,
-                        'line_number_colourBackBorderHex': linenumbercolourbackborderhex})
+                        'stopname':
+                            stopname,
+                        'line_number':
+                            linenumber,
+                        'direction':
+                            direction,
+                        'final_destination':
+                            final_destination,
+                        'due_at_sch':
+                            due_at_sch,
+                        'due_at_rt':
+                            due_at_rt,
+                        'due_in_min':
+                            due_in_min,
+                        'line_number_public':
+                            linenumberpublic,
+                        'line_desc':
+                            linedesc,
+                        'line_transport_type':
+                            linetransporttype,
+                        'line_number_colourFront':
+                            linenumbercolourfront,
+                        'line_number_colourFrontHex':
+                            linenumbercolourfronthex,
+                        'line_number_colourBack':
+                            linenumbercolourback,
+                        'line_number_colourBackHex':
+                            linenumbercolourbackhex,
+                        'line_number_colourFrontBorder':
+                            linenumbercolourfrontborder,
+                        'line_number_colourFrontBorderHex':
+                            linenumbercolourfrontborderhex,
+                        'line_number_colourBackBorder':
+                            linenumbercolourbackborder,
+                        'line_number_colourBackBorderHex':
+                            linenumbercolourbackborderhex})
             except (TypeError, KeyError, IndexError) as error:
                 LOGGER.error('Error connecting to De Lijn api, %s', error)
         await common.close()
