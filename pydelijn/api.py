@@ -5,8 +5,9 @@ of De Lijn, the public transportation company of Flanders (Belgium)
 """
 from .common import BASE_URL, LOGGER
 
-from datetime import timedelta, datetime
+from datetime import datetime
 import pytz
+
 
 class Passages():
     """A class to get passage information."""
@@ -37,9 +38,8 @@ class Passages():
         stopname = str(self.stopid)
         endpointstop = '{}haltes/{}/{}'.format(BASE_URL, str(entitynum), str(self.stopid))
         resultstop = await common.api_call(endpointstop)
-        if resultstop != None:
-            stopname = "{}, {}".format(str(resultstop.get('omschrijving')),str(resultstop.get('omschrijvingGemeente')))
-
+        if resultstop is not None:
+            stopname = "{}, {}".format(str(resultstop.get('omschrijving')), str(resultstop.get('omschrijvingGemeente')))
 
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL, str(entitynum), str(self.stopid))
         resultrealtime = await common.api_call(endpointrealtime)
@@ -55,12 +55,12 @@ class Passages():
                     due_at_rt = passage.get('real-timeTijdstip')
                     due_in_min = None
 
-                    if due_at_rt != None:
+                    if due_at_rt is not None:
                         dt_rt_local = tzone.localize(datetime.strptime(due_at_rt, "%Y-%m-%dT%H:%M:%S"), is_dst=None)
                         dt_now_local = tzone.localize(datetime.now(), is_dst=None)
                         diff = dt_rt_local - dt_now_local
                         due_in_min = int(diff.total_seconds() / 60)
-                    elif due_at_sch != None:
+                    elif due_at_sch is not None:
                         dt_rt_local = tzone.localize(datetime.strptime(due_at_sch, "%Y-%m-%dT%H:%M:%S"), is_dst=None)
                         dt_now_local = tzone.localize(datetime.now(), is_dst=None)
                         diff = dt_rt_local - dt_now_local
@@ -100,8 +100,7 @@ class Passages():
                                      'line_number_colourFrontBorder': line_number_colourFrontBorder,
                                      'line_number_colourFrontBorderHex': line_number_colourFrontBorderHex,
                                      'line_number_colourBackBorder': line_number_colourBackBorder,
-                                     'line_number_colourBackBorderHex': line_number_colourBackBorderHex
-                                      })
+                                     'line_number_colourBackBorderHex': line_number_colourBackBorderHex})
             except (TypeError, KeyError, IndexError) as error:
                 LOGGER.error('Error connecting to De Lijn api, %s', error)
         await common.close()

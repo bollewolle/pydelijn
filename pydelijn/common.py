@@ -19,14 +19,14 @@ class CommonFunctions():
 
     async def api_call(self, endpoint):
         """Call the API."""
-        HEADERS = {'Ocp-Apim-Subscription-Key': self.subscriptionkey}
+        headers = {'Ocp-Apim-Subscription-Key': self.subscriptionkey}
         data = None
         if self.session is None:
             self.session = aiohttp.ClientSession()
         try:
             async with async_timeout.timeout(5, loop=self.loop):
                 LOGGER.debug("Endpoint URL: " + str(endpoint))
-                response = await self.session.get(url=endpoint, headers=HEADERS)
+                response = await self.session.get(url=endpoint, headers=headers)
                 data = await response.json()
         except aiohttp.ClientError as error:
             LOGGER.error('Error connecting to De Lijn API, %s', error)
