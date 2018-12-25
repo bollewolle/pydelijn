@@ -96,27 +96,41 @@ class Passages():
                         diff = dt_rt_local - dt_now_local
                         due_in_min = int(diff.total_seconds() / 60)
 
-                    endpointlinepublic = '{}lijnen/{}/{}'.format(BASE_URL,
-                                                                 str(ent_num),
-                                                                 str(linenumber))
-                    resultlinepublic = await common.api_call(endpointlinepublic)
-                    linenumberpublic = resultlinepublic.get('lijnnummerPubliek')
-                    linedesc = resultlinepublic.get('omschrijving')
-                    linetransporttype = resultlinepublic.get('vervoertype')
+                    endpointlinepublic = '{}lijnen/{}/{}'.format(
+                        BASE_URL,
+                        str(ent_num),
+                        str(linenumber))
+                    resultlinepublic = await common.api_call(
+                        endpointlinepublic)
+                    linenumberpublic = resultlinepublic.get(
+                        'lijnnummerPubliek')
+                    linedesc = resultlinepublic.get(
+                        'omschrijving')
+                    linetransporttype = resultlinepublic.get(
+                        'vervoertype')
 
                     endpointlinecolours = ("{}lijnen/{}/"
                                            "{}/lijnkleuren".format(BASE_URL,
                                                                    str(ent_num),
                                                                    str(linenumber)))
-                    resultlinecolours = await common.api_call(endpointlinecolours)
-                    linenumbercolourfront = resultlinecolours.get('voorgrond').get('code')
-                    linenumbercolourfronthex = colourshex.get(str(linenumbercolourfront))
-                    linenumbercolourback = resultlinecolours.get('achtergrond').get('code')
-                    linenumbercolourbackhex = colourshex.get(str(linenumbercolourback))
-                    linenumbercolourfrontborder = resultlinecolours.get('voorgrondRand').get('code')
-                    linenumbercolourfrontborderhex = colourshex.get(str(linenumbercolourfrontborder))
-                    linenumbercolourbackborder = resultlinecolours.get('achtergrondRand').get('code')
-                    linenumbercolourbackborderhex = colourshex.get(str(linenumbercolourbackborder))
+                    resultlinecolours = await common.api_call(
+                        endpointlinecolours)
+                    linenumbercolourfront = resultlinecolours.get(
+                        'voorgrond').get('code')
+                    linenumbercolourfronthex = colourshex.get(
+                        str(linenumbercolourfront))
+                    linenumbercolourback = resultlinecolours.get(
+                        'achtergrond').get('code')
+                    linenumbercolourbackhex = colourshex.get(
+                        str(linenumbercolourback))
+                    linenumbercolourfrontborder = resultlinecolours.get(
+                        'voorgrondRand').get('code')
+                    linenumbercolourfrontborderhex = colourshex.get(
+                        str(linenumbercolourfrontborder))
+                    linenumbercolourbackborder = resultlinecolours.get(
+                        'achtergrondRand').get('code')
+                    linenumbercolourbackborderhex = colourshex.get(
+                        str(linenumbercolourbackborder))
 
                     passages.append({
                         'passage':
