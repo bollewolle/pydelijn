@@ -1,3 +1,4 @@
+"""Setup tools config"""
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -9,7 +10,8 @@ setuptools.setup(
     author="bollewolle",
     author_email="dev@bollewolle.be",
     python_requires=">=3.6.0",
-    description="Get realtime info on passages of stops of De Lijn (api.delijn.be",
+    description=("Get realtime info on stop passages "
+                 "of De Lijn (api.delijn.be)"),
     long_description=LONG,
     long_description_content_type="text/markdown",
     url="https://github.com/bollewolle/pydelijn",

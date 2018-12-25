@@ -1,2 +1,2 @@
 """Initialize the package."""
-name = "pydelijn"
+NAME = "pydelijn"

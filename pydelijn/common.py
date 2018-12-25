@@ -26,7 +26,8 @@ class CommonFunctions():
         try:
             async with async_timeout.timeout(5, loop=self.loop):
                 LOGGER.debug("Endpoint URL: " + str(endpoint))
-                response = await self.session.get(url=endpoint, headers=headers)
+                response = await self.session.get(url=endpoint,
+                                                  headers=headers)
                 data = await response.json()
         except aiohttp.ClientError as error:
             LOGGER.error('Error connecting to De Lijn API, %s', error)
@@ -35,4 +36,5 @@ class CommonFunctions():
         return data
 
     async def close(self):
+        """Close the session."""
         await self.session.close()
