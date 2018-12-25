@@ -1,4 +1,4 @@
-"""Setup tools config"""
+"""Setup tools config."""
 import setuptools
 
 with open("README.md", "r") as fh:

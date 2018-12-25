@@ -30,9 +30,9 @@ class CommonFunctions():
                                                   headers=headers)
                 data = await response.json()
         except aiohttp.ClientError as error:
-            LOGGER.error('Error connecting to De Lijn API, %s', error)
+            LOGGER.error("Error connecting to De Lijn API, %s", error)
         except asyncio.TimeoutError as error:
-            LOGGER.debug('Timeout connecting to De Lijn API, %s', error)
+            LOGGER.debug("Timeout connecting to De Lijn API, %s", error)
         return data
 
     async def close(self):
