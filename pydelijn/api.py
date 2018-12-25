@@ -111,9 +111,9 @@ class Passages():
 
                     endpointlinecolours = ("{}lijnen/{}/"
                                            "{}/lijnkleuren".format(
-                                            BASE_URL,
-                                            str(ent_num),
-                                            str(linenumber)))
+                                               BASE_URL,
+                                               str(ent_num),
+                                               str(linenumber)))
                     resultlinecolours = await common.api_call(
                         endpointlinecolours)
                     linenumbercolourfront = resultlinecolours.get(
