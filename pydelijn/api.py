@@ -119,6 +119,8 @@ class Passages():
                     linenumbercolourbackborderhex = colourshex.get(str(linenumbercolourbackborder))
 
                     passages.append({
+                        'passage':
+                            index,
                         'stopname':
                             stopname,
                         'line_number':

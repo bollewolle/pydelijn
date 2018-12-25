@@ -25,14 +25,14 @@ class CommonFunctions():
             self.session = aiohttp.ClientSession()
         try:
             async with async_timeout.timeout(5, loop=self.loop):
-                LOGGER.debug("Endpoint URL: " + str(endpoint))
+                LOGGER.debug("Endpoint URL: %s", str(endpoint))
                 response = await self.session.get(url=endpoint,
                                                   headers=headers)
                 data = await response.json()
         except aiohttp.ClientError as error:
-            LOGGER.error("Error connecting to De Lijn API, %s", error)
+            LOGGER.error("Error connecting to De Lijn API: %s", error)
         except asyncio.TimeoutError as error:
-            LOGGER.debug("Timeout connecting to De Lijn API, %s", error)
+            LOGGER.debug("Timeout connecting to De Lijn API: %s", error)
         return data
 
     async def close(self):
