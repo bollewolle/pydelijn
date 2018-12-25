@@ -6,7 +6,6 @@ import aiohttp
 
 LOGGER = logging.getLogger(__name__)
 BASE_URL = 'https://api.delijn.be/DLKernOpenData/v1/beta/'
-# HEADERS = {'Ocp-Apim-Subscription-Key': 'fe85e284e7be402a8bef8b058e166bda'}
 
 
 class CommonFunctions():
