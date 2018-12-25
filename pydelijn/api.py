@@ -33,8 +33,6 @@ class Passages():
         resultcolours = await common.api_call(endpointcolours)
         for colours in resultcolours['kleuren']:
             colourshex.update({str(colours.get('code')): colours.get('hex')})
-            #print(colourshex)
-        #print(resultcolours)
 
         stopname = str(self.stopid)
         endpointstop = '{}haltes/{}/{}'.format(BASE_URL, str(entitynum), str(self.stopid))
@@ -46,10 +44,8 @@ class Passages():
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL, str(entitynum), str(self.stopid))
         resultrealtime = await common.api_call(endpointrealtime)
 
-        #print(resultrealtime)
         for stoppassages in resultrealtime['halteDoorkomsten'] or []:
             try:
-                #print(stoppassages)
                 for index, passage in zip(range(self.maxpassages), stoppassages['doorkomsten']):
                     ent_num = passage.get('entiteitnummer')
                     line_number = passage.get('lijnnummer')
@@ -72,14 +68,12 @@ class Passages():
 
                     endpointlinepublic = '{}lijnen/{}/{}'.format(BASE_URL, str(ent_num), str(line_number))
                     resultlinepublic = await common.api_call(endpointlinepublic)
-                    #print(resultlinepublic)
                     line_number_public = resultlinepublic.get('lijnnummerPubliek')
                     line_desc = resultlinepublic.get('omschrijving')
                     line_transport_type = resultlinepublic.get('vervoertype')
 
                     endpointlinecolours = '{}lijnen/{}/{}/lijnkleuren'.format(BASE_URL, str(ent_num), str(line_number))
                     resultlinecolours = await common.api_call(endpointlinecolours)
-                    #print(resultlinecolours)
                     line_number_colourFront = resultlinecolours.get('voorgrond').get('code')
                     line_number_colourFrontHex = colourshex.get(str(line_number_colourFront))
                     line_number_colourBack = resultlinecolours.get('achtergrond').get('code')
