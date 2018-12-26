@@ -50,5 +50,5 @@ jobs:
       script: skip
       deploy: &pypi
         provider: pypi
-        user: "$PYPIUSER"
-        password: "$PYPIKEY"
+        user: "PYPIUSER"
+        password: "PYPIKEY"
