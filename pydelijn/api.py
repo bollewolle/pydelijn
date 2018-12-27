@@ -33,6 +33,9 @@ class Passages():
     async def get_passages(self):
         """Get passages info from stopid."""
         from .common import CommonFunctions
+        selfcreatedsession = False
+        if self.session is None:
+            selfcreatedsession = True
         entitynum = self.stopid[:1]
         common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
         passages = []
@@ -174,7 +177,8 @@ class Passages():
                             linenumbercolourbackborderhex})
             except (TypeError, KeyError, IndexError) as error:
                 LOGGER.error('Error connecting to De Lijn api, %s', error)
-        await common.close()
+        if selfcreatedsession is True:
+            await common.close()
         self._passages = passages
 
     @property
