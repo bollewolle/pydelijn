@@ -1,19 +1,3 @@
-# pydelijn [![Build Status](https://travis-ci.com/bollewolle/pydelijn.svg?branch=master)](https://travis-ci.com/bollewolle/pyruter)
-A Python package to retrieve realtime data of passages at stops of De Lijn, the public transport company in Flanders (Belgium)
-
-Main purpose at the moment is to feed a sensor in Home-Assistant
-
-**Important note**: a developer account needs to be created at https://data.delijn.be to generate a subscription key for the api's.
-
-## Install
-
-```bash
-pip install pydelijn
-```
-
-### Example usage
-
-```python
 """Example usage of pydelijn."""
 import asyncio
 import aiohttp
