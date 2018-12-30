@@ -15,7 +15,8 @@ async def test_pydelijn():
                           maxpassages,
                           subscriptionkey,
                           custom_session)
-    await delijndata.get_departures()
+    await delijndata.get_passages()
+    await custom_session.close()
 
     print_data(delijndata)
 
@@ -51,3 +52,4 @@ def print_data(delijndata):
 
 LOOP = asyncio.get_event_loop()
 LOOP.run_until_complete(test_pydelijn())
+LOOP.close()
