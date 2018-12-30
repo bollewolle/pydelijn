@@ -3,20 +3,26 @@ import asyncio
 import aiohttp
 from pydelijn.api import Passages
 
+
 async def test_pydelijn():
     """Example usage of pydelijn."""
     subscriptionkey = '<put your data.delijn.be subscriptionkey here>'
     stopid = 200551
     maxpassages = 10
     custom_session = aiohttp.ClientSession()
-    delijnData = Passages(loop, stopid, maxpassages, subscriptionkey, custom_session)
-    await data.get_departures()
+    delijndata = Passages(LOOP,
+                          stopid,
+                          maxpassages,
+                          subscriptionkey,
+                          custom_session)
+    await delijndata.get_departures()
 
-    print_data(delijnData)
+    print_data(delijndata)
 
-def print_data(delijnData):
-    """Pretty Print the data"""
-    for line in delijnData.passages:
+
+def print_data(delijndata):
+    """Pretty Print the data."""
+    for line in delijndata.passages:
         print("----------------------------------------")
         print("Passage #: %s" % (line['passage']))
         print("Stop Name: %s" % (line['stopname']))
@@ -43,5 +49,5 @@ def print_data(delijnData):
             line['line_number_colourBackBorderHex']))
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(test_pydelijn())
+LOOP = asyncio.get_event_loop()
+LOOP.run_until_complete(test_pydelijn())
