@@ -106,76 +106,78 @@ class Passages():
                             str(linenumber))
                         resultlinepublic = await common.api_call(
                             endpointlinepublic)
-                        linenumberpublic = resultlinepublic.get(
-                            'lijnnummerPubliek')
-                        linedesc = resultlinepublic.get(
-                            'omschrijving')
-                        linetransporttype = resultlinepublic.get(
-                            'vervoertype')
+                        if resultlinepublic is not None:
+                            linenumberpublic = resultlinepublic.get(
+                                'lijnnummerPubliek')
+                            linedesc = resultlinepublic.get(
+                                'omschrijving')
+                            linetransporttype = resultlinepublic.get(
+                                'vervoertype')
 
-                        endpointlinecolours = ("{}lijnen/{}/"
-                                               "{}/lijnkleuren".format(
-                                                   BASE_URL,
-                                                   str(ent_num),
-                                                   str(linenumber)))
-                        resultlinecolours = await common.api_call(
-                            endpointlinecolours)
-                        linenumbercolourfront = resultlinecolours.get(
-                            'voorgrond').get('code')
-                        linenumbercolourfronthex = colourshex.get(
-                            str(linenumbercolourfront))
-                        linenumbercolourback = resultlinecolours.get(
-                            'achtergrond').get('code')
-                        linenumbercolourbackhex = colourshex.get(
-                            str(linenumbercolourback))
-                        linenumbercolourfrontborder = resultlinecolours.get(
-                            'voorgrondRand').get('code')
-                        linenumbercolourfrontborderhex = colourshex.get(
-                            str(linenumbercolourfrontborder))
-                        linenumbercolourbackborder = resultlinecolours.get(
-                            'achtergrondRand').get('code')
-                        linenumbercolourbackborderhex = colourshex.get(
-                            str(linenumbercolourbackborder))
+                            endpointlinecolours = ("{}lijnen/{}/"
+                                                   "{}/lijnkleuren".format(
+                                                       BASE_URL,
+                                                       str(ent_num),
+                                                       str(linenumber)))
+                            resultlinecolours = await common.api_call(
+                                endpointlinecolours)
+                            if resultlinecolours is not None:
+                                linenumcolfront = resultlinecolours.get(
+                                    'voorgrond').get('code')
+                                linenumcolfronthex = colourshex.get(
+                                    str(linenumcolfront))
+                                linenumcolback = resultlinecolours.get(
+                                    'achtergrond').get('code')
+                                linenumcolbackhex = colourshex.get(
+                                    str(linenumcolback))
+                                linenumcolfrontborder = resultlinecolours.get(
+                                    'voorgrondRand').get('code')
+                                linenumcolfrontborderhex = colourshex.get(
+                                    str(linenumcolfrontborder))
+                                linenumcolbackborder = resultlinecolours.get(
+                                    'achtergrondRand').get('code')
+                                linenumcolbackborderhex = colourshex.get(
+                                    str(linenumcolbackborder))
 
-                        passages.append({
-                            'passage':
-                                index,
-                            'stopname':
-                                stopname,
-                            'line_number':
-                                linenumber,
-                            'direction':
-                                direction,
-                            'final_destination':
-                                final_destination,
-                            'due_at_sch':
-                                due_at_sch,
-                            'due_at_rt':
-                                due_at_rt,
-                            'due_in_min':
-                                due_in_min,
-                            'line_number_public':
-                                linenumberpublic,
-                            'line_desc':
-                                linedesc,
-                            'line_transport_type':
-                                linetransporttype,
-                            'line_number_colourFront':
-                                linenumbercolourfront,
-                            'line_number_colourFrontHex':
-                                linenumbercolourfronthex,
-                            'line_number_colourBack':
-                                linenumbercolourback,
-                            'line_number_colourBackHex':
-                                linenumbercolourbackhex,
-                            'line_number_colourFrontBorder':
-                                linenumbercolourfrontborder,
-                            'line_number_colourFrontBorderHex':
-                                linenumbercolourfrontborderhex,
-                            'line_number_colourBackBorder':
-                                linenumbercolourbackborder,
-                            'line_number_colourBackBorderHex':
-                                linenumbercolourbackborderhex})
+                                passages.append({
+                                    'passage':
+                                        index,
+                                    'stopname':
+                                        stopname,
+                                    'line_number':
+                                        linenumber,
+                                    'direction':
+                                        direction,
+                                    'final_destination':
+                                        final_destination,
+                                    'due_at_sch':
+                                        due_at_sch,
+                                    'due_at_rt':
+                                        due_at_rt,
+                                    'due_in_min':
+                                        due_in_min,
+                                    'line_number_public':
+                                        linenumberpublic,
+                                    'line_desc':
+                                        linedesc,
+                                    'line_transport_type':
+                                        linetransporttype,
+                                    'line_number_colourFront':
+                                        linenumcolfront,
+                                    'line_number_colourFrontHex':
+                                        linenumcolfronthex,
+                                    'line_number_colourBack':
+                                        linenumcolback,
+                                    'line_number_colourBackHex':
+                                        linenumcolbackhex,
+                                    'line_number_colourFrontBorder':
+                                        linenumcolfrontborder,
+                                    'line_number_colourFrontBorderHex':
+                                        linenumcolfrontborderhex,
+                                    'line_number_colourBackBorder':
+                                        linenumcolbackborder,
+                                    'line_number_colourBackBorderHex':
+                                        linenumcolbackborderhex})
                 except (TypeError, KeyError, IndexError) as error:
                     LOGGER.error('Error connecting to De Lijn api, %s', error)
         if selfcreatedsession is True:
