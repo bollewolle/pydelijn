@@ -14,7 +14,7 @@ from .common import BASE_URL, LOGGER
 
 
 def convert_to_utc(localtime, timeformat):
-    """Converts local time of Europe/Brussels of the API into UTC"""
+    """Convert local time of Europe/Brussels of the API into UTC."""
     if localtime is None:
         return None
     if timeformat is None:
@@ -146,9 +146,9 @@ class Passages():
 
                             endpointlinecolours = ("{}lijnen/{}/"
                                                    "{}/lijnkleuren".format(
-                                BASE_URL,
-                                str(ent_num),
-                                str(linenumber)))
+                                                        BASE_URL,
+                                                        str(ent_num),
+                                                        str(linenumber)))
                             resultlinecolours = await common.api_call(
                                 endpointlinecolours)
                             if resultlinecolours is not None:
@@ -209,7 +209,8 @@ class Passages():
                                     'line_number_colourBackBorderHex':
                                         linenumcolbackborderhex})
                 except (TypeError, KeyError, IndexError) as error:
-                    LOGGER.warning("Error connecting to De Lijn api, %s", error)
+                    LOGGER.warning("Error connecting to De Lijn api, %s",
+                                   error)
         if selfcreatedsession is True:
             await common.close()
         self._passages = passages
