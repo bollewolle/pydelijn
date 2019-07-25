@@ -13,6 +13,19 @@ import pytz
 from .common import BASE_URL, LOGGER
 
 
+def convert_to_utc(localtime, timeformat):
+    """Converts local time of Europe/Brussels of the API into UTC"""
+    if localtime is None:
+        return None
+    if timeformat is None:
+        timeformat = '%Y-%m-%dT%H:%M:%S'
+    localtimezone = pytz.timezone('Europe/Brussels')
+    localtimenaive = datetime.strptime(localtime, timeformat)
+    dtlocal = localtimezone.localize(localtimenaive)
+    dtutc = dtlocal.astimezone(pytz.utc)
+    return dtutc
+
+
 class Passages():
     """A class to get passage information."""
 
@@ -21,7 +34,8 @@ class Passages():
                  stopid,
                  maxpassages,
                  subscriptionkey,
-                 session=None):
+                 session=None,
+                 utcoutput=None):
         """Initialize the class."""
         self.loop = loop
         self.session = session
@@ -29,6 +43,7 @@ class Passages():
         self.maxpassages = maxpassages
         self.subscriptionkey = subscriptionkey
         self._passages = []
+        self.utcoutput = utcoutput
 
     async def get_passages(self):
         """Get passages info from stopid."""
@@ -73,32 +88,47 @@ class Passages():
                         linenumber = passage.get('lijnnummer')
                         direction = passage.get('richting')
                         final_destination = passage.get('bestemming')
-                        due_at_sch = passage.get('dienstregelingTijdstip')
-                        due_at_rt = passage.get('real-timeTijdstip')
+                        due_at_schedule = passage.get('dienstregelingTijdstip')
+                        due_at_realtime = passage.get('real-timeTijdstip')
                         due_in_min = None
 
-                        if due_at_rt is not None:
-                            dt_rt_local = tzone.localize(
-                                datetime.strptime(
-                                    due_at_rt,
-                                    "%Y-%m-%dT%H:%M:%S"),
-                                is_dst=None)
-                            dt_now_local = tzone.localize(
-                                datetime.now(),
-                                is_dst=None)
-                            diff = dt_rt_local - dt_now_local
-                            due_in_min = int(diff.total_seconds() / 60)
-                        elif due_at_sch is not None:
-                            dt_rt_local = tzone.localize(
-                                datetime.strptime(
-                                    due_at_sch,
-                                    "%Y-%m-%dT%H:%M:%S"),
-                                is_dst=None)
-                            dt_now_local = tzone.localize(
-                                datetime.now(),
-                                is_dst=None)
-                            diff = dt_rt_local - dt_now_local
-                            due_in_min = int(diff.total_seconds() / 60)
+                        timeformat = '%Y-%m-%dT%H:%M:%S'
+                        if self.utcoutput is True:
+                            if due_at_realtime is not None:
+                                dt_rt_utc = convert_to_utc(
+                                    due_at_realtime,
+                                    timeformat)
+                                dt_now_utc = datetime.now(pytz.utc)
+                                diff = dt_rt_utc - dt_now_utc
+                                due_in_min = int(diff.total_seconds() / 60)
+                                due_at_realtime = dt_rt_utc.isoformat()
+                            elif due_at_schedule is not None:
+                                dt_sch_utc = convert_to_utc(
+                                    due_at_schedule,
+                                    timeformat)
+                                dt_now_utc = datetime.now(pytz.utc)
+                                diff = dt_sch_utc - dt_now_utc
+                                due_in_min = int(diff.total_seconds() / 60)
+                                due_at_schedule = dt_sch_utc.isoformat()
+                        else:
+                            if due_at_realtime is not None:
+                                dt_rt_local = tzone.localize(
+                                    datetime.strptime(
+                                        due_at_realtime,
+                                        timeformat))
+                                dt_now_local = tzone.localize(
+                                    datetime.now())
+                                diff = dt_rt_local - dt_now_local
+                                due_in_min = int(diff.total_seconds() / 60)
+                            elif due_at_schedule is not None:
+                                dt_sch_local = tzone.localize(
+                                    datetime.strptime(
+                                        due_at_schedule,
+                                        timeformat))
+                                dt_now_local = tzone.localize(
+                                    datetime.now())
+                                diff = dt_sch_local - dt_now_local
+                                due_in_min = int(diff.total_seconds() / 60)
 
                         endpointlinepublic = '{}lijnen/{}/{}'.format(
                             BASE_URL,
@@ -116,9 +146,9 @@ class Passages():
 
                             endpointlinecolours = ("{}lijnen/{}/"
                                                    "{}/lijnkleuren".format(
-                                                       BASE_URL,
-                                                       str(ent_num),
-                                                       str(linenumber)))
+                                BASE_URL,
+                                str(ent_num),
+                                str(linenumber)))
                             resultlinecolours = await common.api_call(
                                 endpointlinecolours)
                             if resultlinecolours is not None:
@@ -150,10 +180,10 @@ class Passages():
                                         direction,
                                     'final_destination':
                                         final_destination,
-                                    'due_at_sch':
-                                        due_at_sch,
-                                    'due_at_rt':
-                                        due_at_rt,
+                                    'due_at_schedule':
+                                        due_at_schedule,
+                                    'due_at_realtime':
+                                        due_at_realtime,
                                     'due_in_min':
                                         due_in_min,
                                     'line_number_public':
@@ -179,7 +209,7 @@ class Passages():
                                     'line_number_colourBackBorderHex':
                                         linenumcolbackborderhex})
                 except (TypeError, KeyError, IndexError) as error:
-                    LOGGER.error('Error connecting to De Lijn api, %s', error)
+                    LOGGER.warning("Error connecting to De Lijn api, %s", error)
         if selfcreatedsession is True:
             await common.close()
         self._passages = passages

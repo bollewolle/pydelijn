@@ -30,8 +30,10 @@ async def test_pydelijn():
                           stopid,
                           maxpassages,
                           subscriptionkey,
-                          custom_session)
-    await delijndata.get_departures()
+                          custom_session,
+                          True)
+    await delijndata.get_passages()
+    await custom_session.close()
 
     print_data(delijndata)
 
@@ -48,8 +50,8 @@ def print_data(delijndata):
         print("Line Transport Type: %s" % (line['line_transport_type']))
         print("Direction: %s" % (line['direction']))
         print("Final Destination: %s" % (line['final_destination']))
-        print("Due At (schedule): %s" % (line['due_at_sch']))
-        print("Due At (real-time): %s" % (line['due_at_rt']))
+        print("Due At (schedule): %s" % (line['due_at_schedule']))
+        print("Due At (real-time): %s" % (line['due_at_realtime']))
         print("Due In (min): %s" % (line['due_in_min']))
         print("Line Colour - Front: %s - Hex: %s" % (
             line['line_number_colourFront'],
@@ -67,3 +69,5 @@ def print_data(delijndata):
 
 LOOP = asyncio.get_event_loop()
 LOOP.run_until_complete(test_pydelijn())
+LOOP.close()
+
