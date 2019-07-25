@@ -98,18 +98,21 @@ class Passages():
                                 dt_rt_utc = convert_to_utc(
                                     due_at_realtime,
                                     timeformat)
-                                dt_now_utc = datetime.now(pytz.utc)
-                                diff = dt_rt_utc - dt_now_utc
-                                due_in_min = int(diff.total_seconds() / 60)
                                 due_at_realtime = dt_rt_utc.isoformat()
-                            elif due_at_schedule is not None:
+
+                            if due_at_schedule is not None:
                                 dt_sch_utc = convert_to_utc(
                                     due_at_schedule,
                                     timeformat)
-                                dt_now_utc = datetime.now(pytz.utc)
+                                due_at_schedule = dt_sch_utc.isoformat()
+
+                            dt_now_utc = datetime.now(pytz.utc)
+                            if due_at_realtime is not None:
+                                diff = dt_rt_utc - dt_now_utc
+                                due_in_min = int(diff.total_seconds() / 60)
+                            elif due_at_schedule is not None:
                                 diff = dt_sch_utc - dt_now_utc
                                 due_in_min = int(diff.total_seconds() / 60)
-                                due_at_schedule = dt_sch_utc.isoformat()
                         else:
                             if due_at_realtime is not None:
                                 dt_rt_local = tzone.localize(

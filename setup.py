@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pydelijn",
-    version="0.5.0",
+    version="0.5.1",
     author="bollewolle",
     author_email="dev@bollewolle.be",
     python_requires=">=3.5.0",
