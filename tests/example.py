@@ -1,30 +1,30 @@
-"""Example usage of pydelijn."""
+"""Example usage of pystibmvib."""
 import asyncio
 import aiohttp
-from pydelijn.api import Passages
+from pystibmvib.api import Passages
 
 
-async def test_pydelijn():
-    """Example usage of pydelijn."""
-    subscriptionkey = '<put your data.delijn.be subscriptionkey here>'
-    stopid = 200551
+async def test_pystibmvib():
+    """Example usage of pystibmvib."""
+    subscriptionkey = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'#'<put your opendata.stib-mivb.be subscription key here>'
+    stopid = 2838
     maxpassages = 10
     custom_session = aiohttp.ClientSession()
-    delijndata = Passages(LOOP,
+    stibmvibdata = Passages(LOOP,
                           stopid,
                           maxpassages,
                           subscriptionkey,
                           custom_session,
                           True)
-    await delijndata.get_passages()
+    await stibmvibdata.get_passages()
     await custom_session.close()
 
-    print_data(delijndata)
+    print_data(stibmvibdata)
 
 
-def print_data(delijndata):
+def print_data(stibmvibdata):
     """Pretty Print the data."""
-    for line in delijndata.passages:
+    for line in stibmvibdata.passages:
         print("----------------------------------------")
         print("Passage #: %s" % (line['passage']))
         print("Stop Name: %s" % (line['stopname']))
@@ -52,5 +52,5 @@ def print_data(delijndata):
 
 
 LOOP = asyncio.get_event_loop()
-LOOP.run_until_complete(test_pydelijn())
+LOOP.run_until_complete(test_pystibmvib())
 LOOP.close()

@@ -1,2 +1,2 @@
 """Initialize the package."""
-NAME = "pydelijn"
+NAME = "pystibmvib"

@@ -1,8 +1,8 @@
 """
-Get realtime info on stop passages of De Lijn (api.delijn.be).
+Get realtime info on stop passages of STIB/MVIB (opendata-api.stib-mivb.be).
 
 A module to get information about the next passages from a stop
-of De Lijn, the public transportation company of Flanders (Belgium).
+of STIB/MVIB, the public transportation company of Brussels (Belgium).
 
 This code is released under the terms of the MIT license. See the LICENSE
 file for more details.
@@ -11,7 +11,11 @@ from datetime import datetime
 import pytz
 
 from .common import BASE_URL, LOGGER
+from .shapefile_reader import ShapefileReader
 
+from .common import CommonFunctions
+
+PASSING_TIME_BY_POINT_SUFFIX = "/OperationMonitoring/4.0/PassingTimeByPoint/"
 
 def convert_to_utc(localtime, timeformat):
     """Convert local time of Europe/Brussels of the API into UTC."""
@@ -31,28 +35,57 @@ class Passages():
 
     def __init__(self,
                  loop,
-                 stopid,
+                 stop_name,
                  maxpassages,
-                 subscriptionkey,
+                 client_id,
+                 client_secret,
+                 filtered_out_stop_ids=None,
                  session=None,
                  utcoutput=None):
         """Initialize the class."""
+        if filtered_out_stop_ids is None:
+            filtered_out_stop_ids = []
         self.loop = loop
         self.session = session
-        self.stopid = str(stopid)
-        self.maxpassages = maxpassages
-        self.subscriptionkey = subscriptionkey
+        self.stop_name = stop_name
+        self.max_passages = maxpassages
+        self.client_id = client_id
+        self.client_secret = client_secret
         self._passages = []
         self.utcoutput = utcoutput
+        self.shapefile_info = ShapefileReader(loop, session, client_id, client_secret)
+        self._linesinfo = self.shapefile_info.get_stop_info(self.stop_name, filtered_out_stop_ids)
+
 
     async def get_passages(self):
-        """Get passages info from stopid."""
-        from .common import CommonFunctions
+        """Get passages info for given stopname."""
+        stop_ids = []
+        print(self._linesinfo)
+        for line_id, lineinfo in self._linesinfo.items():
+            stop_ids.extend([k["stop_id"] for k in lineinfo])
+
+
         selfcreatedsession = False
         if self.session is None:
             selfcreatedsession = True
+
+        # https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/PassingTimeByPoint/%7Bpoint
+
+        common = CommonFunctions(self.loop, self.session, self.client_id, self.client_secret)
+
+        callURL = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + \
+                  str(stop_ids).replace("'", "").replace("[", "").replace("]", "")
+        raw_result = await common.api_call(callURL)
+
+
+        print(str(raw_result))
+
+
+
+
+    async def foo(self):
         entitynum = self.stopid[:1]
-        common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+        common = CommonFunctions(self.loop, self.session, self.client_id, self.client_secret)
         passages = []
         tzone = pytz.timezone('Europe/Brussels')
 
@@ -82,7 +115,7 @@ class Passages():
         if resultrealtime is not None:
             for stoppassages in resultrealtime['halteDoorkomsten'] or []:
                 try:
-                    for index, passage in zip(range(self.maxpassages),
+                    for index, passage in zip(range(self.max_passages),
                                               stoppassages['doorkomsten']):
                         ent_num = passage.get('entiteitnummer')
                         linenumber = passage.get('lijnnummer')
@@ -216,7 +249,6 @@ class Passages():
                                    error)
         if selfcreatedsession is True:
             await common.close()
-        self._passages = passages
 
     @property
     def passages(self):

@@ -5,16 +5,16 @@ with open("README.md", "r") as fh:
     LONG = fh.read()
 
 setuptools.setup(
-    name="pydelijn",
-    version="0.5.1",
-    author="bollewolle",
-    author_email="dev@bollewolle.be",
+    name="pystibmvib",
+    version="0.0.1",
+    author="helldog136",
+    author_email="dev-helldog136@outlook.com",
     python_requires=">=3.5.0",
     description=("Get realtime info on stop passages "
-                 "of De Lijn (api.delijn.be)"),
+                 "of STIB/MVIB (opendata-api.stib-mivb.be)"),
     long_description=LONG,
     long_description_content_type="text/markdown",
-    url="https://github.com/bollewolle/pydelijn",
+    url="https://github.com/helldog136/pystibmvib",
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
         'aiohttp',
