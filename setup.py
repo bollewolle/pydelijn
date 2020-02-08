@@ -19,7 +19,11 @@ setuptools.setup(
     install_requires=[
         'aiohttp',
         'async_timeout',
-        'pytz'
+        'pytz',
+        'asyncio',
+        'pyshp',
+        'requests',
+        'requests_oauthlib'
     ],
     license='MIT',
     classifiers=(

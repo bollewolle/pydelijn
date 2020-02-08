@@ -90,12 +90,12 @@ class Passages():
                                    .replace("[", "")\
                                    .replace("]", "")
 
-        print("Calling URL: " + callURL)
+        LOGGER.info("Calling URL: " + callURL)
         raw_result = await common.api_call(callURL, {'Accept': 'application/json'})
         if now is None:
             now = datetime.now()
-            print(now)
-        print("Got result from "+callURL+" : "+str(raw_result))
+            LOGGER.info(now)
+        LOGGER.info("Got result from "+callURL+" : "+str(raw_result))
         json_result = json.loads(raw_result)
 
         new_passages = []
@@ -116,7 +116,7 @@ class Passages():
                 additional_info.pop("stop_id")
                 passage.update(additional_info)
                 new_passages.append(passage)
-        print("New values for passages: " + str(new_passages))
+        LOGGER.info("New values for passages: " + str(new_passages))
         self._passages = new_passages
 
         if selfcreatedsession is True:

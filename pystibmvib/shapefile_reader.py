@@ -55,7 +55,7 @@ class ShapefileReader():
                 import zipfile
                 zip_filename = "shapefiles.zip"
                 # save data to disk
-                print("Saving to " + str(zip_filename))
+                LOGGER.info("Saving to " + str(zip_filename))
                 with open(zip_filename, 'wb') as output:
                     output.write(zipped_data)
                     output.close()
@@ -68,7 +68,7 @@ class ShapefileReader():
 
                     # save uncompressed data to disk
                     output_filename = SHAPEFILESFOLDERPATH + "/" + name
-                    print("Saving extracted file to " + str(output_filename))
+                    LOGGER.info("Saving extracted file to " + str(output_filename))
                     with open(output_filename, 'wb') as output:
                         output.write(uncompressed)
 
