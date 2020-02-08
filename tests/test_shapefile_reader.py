@@ -5,8 +5,6 @@ from pystibmvib.shapefile_reader import ShapefileReader
 
 async def test_shapefile_reader():
     """Example usage of pystibmvib."""
-    subscriptionkey = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'  # '<put your opendata.stib-mivb.be subscription key here>'
-
     client_id = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'
     client_secret = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
 
