@@ -9,6 +9,7 @@ from oauthlib.oauth2 import BackendApplicationClient
 LOGGER = logging.getLogger(__name__)
 BASE_URL = 'https://opendata-api.stib-mivb.be'
 
+
 # curl -k -X GET --header "Accept: application/zip" --header "Authorization: Bearer b2ba6c7a35d667564ffa2765aec6ea07" -o ./gtfs.zip "https://opendata-api.stib-mivb.be/Files/2.0/Gtfs"
 class CommonFunctions():
     """A class for common functions."""
@@ -20,16 +21,18 @@ class CommonFunctions():
         self.client_id = client_id
         self.client_secret = client_secret
 
-
-    async def api_call(self, endpoint):
-        token_url = BASE_URL+'/token'
+    async def api_call(self, endpoint, additional_headers=None):
+        if additional_headers is None:
+            additional_headers = {}
+        token_url = BASE_URL + '/token'
 
         client = BackendApplicationClient(self.client_id)
         session = OAuth2Session(self.client_id, client=client)
         session.fetch_token(token_url, auth=(self.client_id, self.client_secret))
 
         """Call the API."""
-        headers = {'Authorization': "Bearer "+str(session.access_token)}
+        headers = {'Authorization': "Bearer " + str(session.access_token)}
+        headers.update(additional_headers)
         data = None
         if self.session is None:
             self.session = aiohttp.ClientSession()
