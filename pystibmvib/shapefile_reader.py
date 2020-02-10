@@ -1,5 +1,6 @@
-from .common import BASE_URL, LOGGER
 import shapefile
+
+from .common import BASE_URL, LOGGER
 
 SHAPEFILESFOLDERPATH = "./stibmvibshapefiles"
 TIMESTAMPFILENAME = "timestamp"
@@ -18,7 +19,6 @@ class ShapefileReader():
         self.session = session
         self.client_id = client_id
         self.client_secret = client_secret
-        self._refresh_shapefiles()
 
     async def _refresh_shapefiles(self):
         """ Get most recent file info if not in local cache (api for files can be called only once per minute.

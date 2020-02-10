@@ -52,11 +52,9 @@ def sort_and_truncate_to(number, passingTimes):
     for passing in passingTimes[0]['passingTimes']:
         if "expectedArrivalTime" in passing.keys():
             res.append(passing)
-            print(c, res, passing)
             res.sort(key=(lambda p: time_getter(p)))
             c += 1
             if len(res) > number:
-                print("hey!")
                 res.pop()
     res = {'passingTimes': res, 'pointId': passingTimes[0]['pointId']}
     res = [res]
@@ -74,6 +72,7 @@ class Passages():
                  filtered_out_stop_ids=None,
                  session=None,
                  utcoutput=None,
+                 max_passages_per_stop=5,
                  lang='fr'):
         """Initialize the class."""
         if filtered_out_stop_ids is None:
@@ -86,6 +85,7 @@ class Passages():
         self._passages = []
         self.lang = lang
         self.utcoutput = utcoutput
+        self.max_passages_per_stop = max_passages_per_stop
         self.filtered_out_stop_ids = filtered_out_stop_ids
         self.shapefile_info = ShapefileReader(loop, session, client_id, client_secret)
         self._linesinfo = None
@@ -128,12 +128,14 @@ class Passages():
         json_result = {'points': []}
         for stop_id in stop_ids:
             callURL = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + stop_id
-
-            print("Calling URL: " + callURL)
             raw_result = await common.api_call(callURL, {'Accept': 'application/json'})
-            print("Got result from " + callURL + " : " + str(raw_result))
-            json_result['points'].extend(sort_and_truncate_to(2, json.loads(raw_result)['points']))
-        print(json_result)
+            LOGGER.info("Got result from " + callURL + " : " + str(raw_result))
+            try:
+                json_result['points'].extend(
+                    sort_and_truncate_to(self.max_passages_per_stop, json.loads(raw_result)['points']))
+            except:
+                LOGGER.error(
+                    "Something went wrong: Can't refresh stop info for stop_id: " + stop_id + "... " + str(raw_result))
 
         new_passages = []
         for point_info_json in json_result['points']:
