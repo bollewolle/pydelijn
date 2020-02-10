@@ -15,7 +15,7 @@ pip install pystibmvib
 
 ```python
 """Example usage of pystibmvib."""
-import aiohttp
+import aiohttp 
 
 from pystibmvib import Passages
 
