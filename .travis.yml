@@ -1,39 +1,11 @@
 language: python
 stages:
-  - linting
   - install
+  - test_install
   - deploy
 
 jobs:
   include:
-    #Linting
-    - stage: linting
-      install: pip install pycodestyle
-      name: Linting with pycodestyle
-      python: '3.6'
-      script: find . -name \*.py -exec pycodestyle {} +
-    - stage: linting
-      install: pip install pydocstyle
-      name: Linting with pydocstyle
-      python: '3.6'
-      script: find . -name \*.py -exec pydocstyle {} +
-    - stage: linting
-      install: pip install pylint
-      name: Linting with pylint
-      python: '3.6'
-      script: find . -name \*.py -exec pylint --disable=F0401,W0613,R0801,R0913,R0914,R0915,R1702,R0912
-        {} +
-    - stage: linting
-      install: pip install pyflakes
-      name: Linting with pyflakes
-      python: '3.6'
-      script: find . -name \*.py -exec pyflakes {} +
-    - stage: linting
-      install: pip install flake8
-      name: Linting with flake8
-      python: '3.6'
-      script: find . -name \*.py -exec flake8 {} +
-
     # Test install the module
     - stage: install
       install: pip install -U pip setuptools wheel
@@ -41,6 +13,14 @@ jobs:
       python: "3.6"
       script:
         - python setup.py install
+
+    # Test the install of the module
+    - stage: test_install
+      install: pip install -U pip setuptools wheel
+      name: "Test setup"
+      python: "3.6"
+      script:
+        - python tests/travis_test_install.py
 
 
     # Deploy to PyPi if all tests pass and change was done on master.
@@ -50,5 +30,5 @@ jobs:
       script: skip
       deploy: &pypi
         provider: pypi
-        user: $PYPI_USERNAME
-        password: $PYPI_PASSWORD
+        user: "__token__"
+        password: $pypi_token
