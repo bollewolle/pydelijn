@@ -72,11 +72,11 @@ class ShapefileReader():
                     with open(output_filename, 'wb') as output:
                         output.write(uncompressed)
 
-                os.remove(zip_filename)
+                # FIXME os.remove(zip_filename)
             LOGGER.info("Finished updating Shapefiles!")
 
-    def get_line_info(self, line_id):
-        self._refresh_shapefiles()
+    async def get_line_info(self, line_id):
+        await self._refresh_shapefiles()
 
         sf = shapefile.Reader(SHAPEFILESFOLDERPATH + "/" + LINES_FILENAME)
 
@@ -85,10 +85,10 @@ class ShapefileReader():
             if str(line_id) == str(line_number):
                 return {"line_number": line_number, "line_type": line_type, "line_color": line_color}
 
-    def get_stop_info(self, stop_name, filtered_out_stop_ids=None):
+    async def get_stop_info(self, stop_name, filtered_out_stop_ids=None):
         if filtered_out_stop_ids is None:
             filtered_out_stop_ids = []
-        self._refresh_shapefiles()
+        await self._refresh_shapefiles()
 
         sf = shapefile.Reader(SHAPEFILESFOLDERPATH + "/" + STOPS_FILENAME)
 
@@ -99,7 +99,7 @@ class ShapefileReader():
                 if stop_id not in filtered_out_stop_ids:
                     if record[LINE_TECH_ID_INDEX] not in possible_lines.keys():
                         possible_lines[record[LINE_TECH_ID_INDEX]] = []
-                    possible_lines[record[LINE_TECH_ID_INDEX]].append(self.get_line_info(record[LINE_NUMBER_INDEX]))
+                    possible_lines[record[LINE_TECH_ID_INDEX]].append(await self.get_line_info(record[LINE_NUMBER_INDEX]))
                     possible_lines[record[LINE_TECH_ID_INDEX]][-1].update({"stop_id": stop_id})
 
                     # for convenience we add also the correspondance between business id for line and line info

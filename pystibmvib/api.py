@@ -63,10 +63,13 @@ class Passages():
         self._passages = []
         self.lang = lang
         self.utcoutput = utcoutput
+        self.filtered_out_stop_ids = filtered_out_stop_ids
         self.shapefile_info = ShapefileReader(loop, session, client_id, client_secret)
-        self._linesinfo = self.shapefile_info.get_stop_info(self.stop_name, filtered_out_stop_ids)
+        self._linesinfo = None
 
     async def update_passages(self, now=None):
+        if self._linesinfo is None:
+            self._linesinfo = await self.shapefile_info.get_stop_info(self.stop_name, self.filtered_out_stop_ids)
         """Get passages info for given stopname."""
         stop_ids = []
         for line_id, lineinfos in self._linesinfo.items():
@@ -90,12 +93,12 @@ class Passages():
                                    .replace("[", "")\
                                    .replace("]", "")
 
-        LOGGER.info("Calling URL: " + callURL)
+        print("Calling URL: " + callURL)
         raw_result = await common.api_call(callURL, {'Accept': 'application/json'})
         if now is None:
             now = datetime.now()
             LOGGER.info(now)
-        LOGGER.info("Got result from "+callURL+" : "+str(raw_result))
+        print("Got result from "+callURL+" : "+str(raw_result))
         json_result = json.loads(raw_result)
 
         new_passages = []
