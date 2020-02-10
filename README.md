@@ -17,13 +17,11 @@ pip install pystibmvib
 """Example usage of pystibmvib."""
 import aiohttp
 
-from pystibmvib.api import Passages
+from pystibmvib import Passages
 
 
 async def test_shapefile_reader():
     """Example usage of pystibmvib."""
-    subscriptionkey = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'  # '<put your opendata.stib-mivb.be subscription key here>'
-
     client_id = '<put your opendata.stib-mivb.be client id here>'
     client_secret = '<put your opendata.stib-mivb.be client secret here>'
 

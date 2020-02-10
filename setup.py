@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pystibmvib",
-    version="0.0.1",
+    version="0.0.2",
     author="helldog136",
     author_email="dev-helldog136@outlook.com",
     python_requires=">=3.5.0",
