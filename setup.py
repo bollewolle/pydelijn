@@ -6,25 +6,23 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pystibmvib",
-    version="0.0.2",
+    version="0.0.3",
     author="helldog136",
-    author_email="dev-helldog136@outlook.com",
+    author_email="dev.helldog136@outlook.com",
     python_requires=">=3.5.0",
     description=("Get realtime info on stop passages "
                  "of STIB/MVIB (opendata-api.stib-mivb.be)"),
     long_description=LONG,
     long_description_content_type="text/markdown",
     url="https://github.com/helldog136/pystibmvib",
-    download_url="https://github.com/helldog136/pystibmvib/archive/0.0.1.tar.gz",
+    download_url="https://github.com/helldog136/pystibmvib/archive/0.0.3.tar.gz",
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
         'aiohttp',
         'async_timeout',
         'pytz',
         'asyncio',
-        'pyshp',
-        'requests',
-        'requests_oauthlib'
+        'pyshp'
     ],
     license='MIT',
     classifiers=(

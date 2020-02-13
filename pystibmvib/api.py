@@ -12,8 +12,8 @@ from datetime import *
 
 import pytz
 
-from .common import BASE_URL, LOGGER
-from .common import CommonFunctions
+from .common import LOGGER
+from .common import APIClient
 from .shapefile_reader import ShapefileReader
 
 PASSING_TIME_BY_POINT_SUFFIX = "/OperationMonitoring/4.0/PassingTimeByPoint/"
@@ -73,6 +73,7 @@ class Passages():
                  session=None,
                  utcoutput=None,
                  max_passages_per_stop=5,
+                 time_ordered_result=False,
                  lang='fr'):
         """Initialize the class."""
         if filtered_out_stop_ids is None:
@@ -86,11 +87,12 @@ class Passages():
         self.lang = lang
         self.utcoutput = utcoutput
         self.max_passages_per_stop = max_passages_per_stop
+        self.time_ordered_result = time_ordered_result
         self.filtered_out_stop_ids = filtered_out_stop_ids
-        self.shapefile_info = ShapefileReader(loop, session, client_id, client_secret)
+        self.shapefile_info = ShapefileReader(loop, self.session, client_id, client_secret)
         self._linesinfo = None
 
-    async def update_passages(self, now=None, max_passages_per_stop_id=5):
+    async def update_passages(self, now=None):
         if self._linesinfo is None:
             self._linesinfo = await self.shapefile_info.get_stop_info(self.stop_name, self.filtered_out_stop_ids)
         """Get passages info for given stopname."""
@@ -107,35 +109,37 @@ class Passages():
 
         # https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/PassingTimeByPoint/%7Bpoint
 
-        common = CommonFunctions(self.loop, self.session, self.client_id, self.client_secret)
+        api_client = APIClient(self.loop, self.session, self.client_id, self.client_secret)
 
         if now is None:
             now = datetime.now()
-            LOGGER.info("Fetching stop data at : " + str(now))
+        LOGGER.info("Fetching stop data at : " + str(now))
 
         # todo hotfix while we get an answer on multiple ids in the same call
         """
-        callURL = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + "%2C".join(stop_ids)
+        call_URL_suffix = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + "%2C".join(stop_ids)
 
-        print("Calling URL: " + callURL)
-        raw_result = await common.api_call(callURL, {'Accept': 'application/json'})
+        print("Calling URL: " + call_URL_suffix)
+        raw_result = await api_client.api_call(call_URL_suffix, {'Accept': 'application/json'})
         if now is None:
             now = datetime.now()
             LOGGER.info(now)
-        print("Got result from "+callURL+" : "+str(raw_result))
+        print("Got result from "+call_URL_suffix+" : "+str(raw_result))
         json_result = json.loads(raw_result)
         """
         json_result = {'points': []}
         for stop_id in stop_ids:
-            callURL = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + stop_id
-            raw_result = await common.api_call(callURL, {'Accept': 'application/json'})
-            LOGGER.info("Got result from " + callURL + " : " + str(raw_result))
+            call_URL_suffix = PASSING_TIME_BY_POINT_SUFFIX + stop_id
+            raw_result = await api_client.api_call(call_URL_suffix, {'Accept': 'application/json'})
+            LOGGER.info("Got result from " + call_URL_suffix + " : " + str(raw_result))
             try:
                 json_result['points'].extend(
                     sort_and_truncate_to(self.max_passages_per_stop, json.loads(raw_result)['points']))
             except:
                 LOGGER.error(
                     "Something went wrong: Can't refresh stop info for stop_id: " + stop_id + "... " + str(raw_result))
+        if self.time_ordered_result:
+            json_result['points'].sort(key=(lambda j: datetime.strptime(j['arrival_time'].split("+")[0], "%Y-%m-%dT%H:%M:%S")))
 
         new_passages = []
         for point_info_json in json_result['points']:
@@ -152,7 +156,7 @@ class Passages():
                 pass_line_number = pass_json['lineId']
                 passage = {"destination": pass_dest,
                            "arrival_time": pass_arrival_time,
-                           "point_id": point_id,
+                           "stop_id": point_id,
                            "message": pass_msg,
                            "arriving_in": {"min": pass_arriving_in_minutes, "sec": pass_arriving_in_seconds}}
                 additional_info = self._linesinfo[pass_line_number][0].copy()
@@ -163,7 +167,7 @@ class Passages():
         self._passages = new_passages
 
         if selfcreatedsession is True:
-            await common.close()
+            await api_client.close()
 
     @property
     def passages(self):

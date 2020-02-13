@@ -1,6 +1,6 @@
 import shapefile
 
-from .common import BASE_URL, LOGGER
+from .common import LOGGER
 
 SHAPEFILESFOLDERPATH = "./stibmvibshapefiles"
 TIMESTAMPFILENAME = "timestamp"
@@ -42,14 +42,14 @@ class ShapefileReader():
 
         if must_update:
             LOGGER.info("Shapefiles validity outdated, updating them...")
-            from .common import CommonFunctions
+            from .common import APIClient
             selfcreatedsession = False
             if self.session is None:
                 selfcreatedsession = True
 
-            common = CommonFunctions(self.loop, self.session, self.client_id, self.client_secret)
+            common = APIClient(self.loop, self.session, self.client_id, self.client_secret)
 
-            endpointshapefiles = '{}/Files/2.0/Shapefiles'.format(BASE_URL)
+            endpointshapefiles = '/Files/2.0/Shapefiles'
             zipped_data = await common.api_call(endpointshapefiles)
             if zipped_data is not None:
                 import zipfile
