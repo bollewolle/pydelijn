@@ -18,8 +18,8 @@ setuptools.setup(
     download_url="https://github.com/helldog136/pystibmvib/archive/0.0.3.tar.gz",
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
-        'aiohttp',
         'async_timeout',
+        'aiohttp',
         'pytz',
         'asyncio',
         'pyshp'
