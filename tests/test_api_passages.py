@@ -14,7 +14,7 @@ async def test_shapefile_reader():
     filtered_out_stop_ids = []#'1465','1820']
     custom_session = aiohttp.ClientSession()
 
-    r = Passages(LOOP, stop_name, client_id, client_secret, filtered_out_stop_ids=filtered_out_stop_ids, session=custom_session)
+    r = Passages(LOOP, stop_name, client_id, client_secret, filtered_out_stop_ids=filtered_out_stop_ids, session=custom_session, time_ordered_result=True)
 
     await r.update_passages()
     print(r.passages)

@@ -138,8 +138,6 @@ class Passages():
             except:
                 LOGGER.error(
                     "Something went wrong: Can't refresh stop info for stop_id: " + stop_id + "... " + str(raw_result))
-        if self.time_ordered_result:
-            json_result['points'].sort(key=(lambda j: datetime.strptime(j['arrival_time'].split("+")[0], "%Y-%m-%dT%H:%M:%S")))
 
         new_passages = []
         for point_info_json in json_result['points']:
@@ -164,6 +162,8 @@ class Passages():
                 passage.update(additional_info)
                 new_passages.append(passage)
         LOGGER.info("New values for passages: " + str(new_passages))
+        if self.time_ordered_result:
+            new_passages.sort(key=(lambda j: datetime.strptime(j['arrival_time'].split("+")[0], "%Y-%m-%dT%H:%M:%S")))
         self._passages = new_passages
 
         if selfcreatedsession is True:
