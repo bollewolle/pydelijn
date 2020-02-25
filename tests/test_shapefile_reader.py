@@ -13,8 +13,8 @@ async def test_shapefile_reader():
     custom_session = aiohttp.ClientSession()
     r = ShapefileReader(LOOP, custom_session, client_id, client_secret)
 
-    print(r.get_line_info(line_id))
-    print(r.get_stop_info("scherdemael"))
+    print(await r.get_line_info(line_id))
+    print(await r.get_stop_info("scherdemael"))
 
     await custom_session.close()
 

@@ -1,8 +1,13 @@
+import os
+import tempfile
+
 import shapefile
 
 from .common import LOGGER
 
-SHAPEFILESFOLDERPATH = "./stibmvibshapefiles"
+SEP = os.sep
+SHAPEFILESFOLDERPATH = tempfile.gettempdir()+SEP+"stibmvibshapefiles"
+print(SHAPEFILESFOLDERPATH)
 TIMESTAMPFILENAME = "timestamp"
 LINES_FILENAME = "LIGNES_BRUTES"
 STOPS_FILENAME = "ACTU_STOPS"
@@ -28,20 +33,27 @@ class ShapefileReader():
         import os
         import time
         if not os.path.isdir(SHAPEFILESFOLDERPATH):
+            LOGGER.info("Shapefile folder not existing, creating it...")
             must_update = True
             os.mkdir(SHAPEFILESFOLDERPATH)
 
-        if not os.path.isfile(SHAPEFILESFOLDERPATH + "/" + TIMESTAMPFILENAME):
-            with open(SHAPEFILESFOLDERPATH + "/" + TIMESTAMPFILENAME, 'w') as f:
+        if not os.path.isfile(SHAPEFILESFOLDERPATH + SEP + TIMESTAMPFILENAME):
+            LOGGER.info("Shapefile timestamp file not existing, creating it...")
+            with open(SHAPEFILESFOLDERPATH + SEP + TIMESTAMPFILENAME, 'w') as f:
                 f.write(str(time.time()))
             must_update = True
 
-        with open(SHAPEFILESFOLDERPATH + "/" + TIMESTAMPFILENAME, 'r') as f:
-            if int(f.read().split(".")[0]) + DELTA_MAX_TIMESTAMP < time.time():
+        with open(SHAPEFILESFOLDERPATH + SEP + TIMESTAMPFILENAME, 'r') as f:
+            timestamp = int(f.read().split(".")[0])
+            now = time.time()
+            if now - timestamp > DELTA_MAX_TIMESTAMP:
                 must_update = True
+                LOGGER.info(f"Delta since last update is {now-timestamp} which is greater than {DELTA_MAX_TIMESTAMP}. Invalidating files...")
 
         if must_update:
             LOGGER.info("Shapefiles validity outdated, updating them...")
+            with open(SHAPEFILESFOLDERPATH + SEP + TIMESTAMPFILENAME, 'w') as f:
+                f.write(str(time.time()))
             from .common import APIClient
             selfcreatedsession = False
             if self.session is None:
@@ -56,18 +68,19 @@ class ShapefileReader():
                 zip_filename = "shapefiles.zip"
                 # save data to disk
                 LOGGER.info("Saving to " + str(zip_filename))
-                with open(zip_filename, 'wb') as output:
+                zip_path = SHAPEFILESFOLDERPATH+SEP+zip_filename
+                with open(zip_path, 'wb') as output:
                     output.write(zipped_data)
                     output.close()
 
                 # extract the data
-                zfobj = zipfile.ZipFile(zip_filename)
+                zfobj = zipfile.ZipFile(zip_path)
                 for name in zfobj.namelist():
                     uncompressed = zfobj.read(name)
                     name = name.split('/')[-1]
 
                     # save uncompressed data to disk
-                    output_filename = SHAPEFILESFOLDERPATH + "/" + name
+                    output_filename = SHAPEFILESFOLDERPATH + SEP + name
                     LOGGER.info("Saving extracted file to " + str(output_filename))
                     with open(output_filename, 'wb') as output:
                         output.write(uncompressed)
@@ -78,7 +91,7 @@ class ShapefileReader():
     async def get_line_info(self, line_id):
         await self._refresh_shapefiles()
 
-        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + "/" + LINES_FILENAME)
+        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + LINES_FILENAME)
 
         for record in sf.records():
             line_number, line_type, line_color = str(int(record[0][:-1])), record[0][-1:].upper(), record[4]
@@ -90,7 +103,7 @@ class ShapefileReader():
             filtered_out_stop_ids = []
         await self._refresh_shapefiles()
 
-        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + "/" + STOPS_FILENAME)
+        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + STOPS_FILENAME)
 
         possible_lines = {}
         for record in sf.records():
