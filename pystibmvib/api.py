@@ -12,8 +12,8 @@ from datetime import *
 
 import pytz
 
-from .common import LOGGER
 from .common import APIClient
+from .common import LOGGER
 from .shapefile_reader import ShapefileReader
 
 PASSING_TIME_BY_POINT_SUFFIX = "/OperationMonitoring/4.0/PassingTimeByPoint/"
@@ -116,17 +116,17 @@ class Passages():
         LOGGER.info("Fetching stop data at : " + str(now))
 
         # todo hotfix while we get an answer on multiple ids in the same call
-        """
-        call_URL_suffix = BASE_URL + PASSING_TIME_BY_POINT_SUFFIX + "%2C".join(stop_ids)
+        if False:
+            call_URL_suffix = PASSING_TIME_BY_POINT_SUFFIX + "%2C".join(stop_ids)
 
-        print("Calling URL: " + call_URL_suffix)
-        raw_result = await api_client.api_call(call_URL_suffix, {'Accept': 'application/json'})
-        if now is None:
-            now = datetime.now()
-            LOGGER.info(now)
-        print("Got result from "+call_URL_suffix+" : "+str(raw_result))
-        json_result = json.loads(raw_result)
-        """
+            print("Calling URL: " + call_URL_suffix)
+            raw_result = await api_client.api_call(call_URL_suffix, {'Accept': 'application/json'})
+            if now is None:
+                now = datetime.now()
+                LOGGER.info(now)
+            print("Got result from "+call_URL_suffix+" : "+str(raw_result))
+            json_result = json.loads(raw_result)
+
         json_result = {'points': []}
         for stop_id in stop_ids:
             call_URL_suffix = PASSING_TIME_BY_POINT_SUFFIX + stop_id
