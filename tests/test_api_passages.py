@@ -10,7 +10,7 @@ async def test_shapefile_reader():
     client_secret = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
 
 
-    stop_name = "scherdemael"
+    stop_name = "de brouckere"
     filtered_out_stop_ids = []#'1465','1820']
     custom_session = aiohttp.ClientSession()
 
