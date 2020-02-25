@@ -38,7 +38,7 @@ def get_time_delta(t1, t2):
     t2 = datetime.strptime(t2.split("+")[0], "%Y-%m-%dT%H:%M:%S")  # 2020-02-08T14:40:00+01:00
     delta = t2 - t1
     ret = max(0, delta.seconds)
-    return delta.seconds
+    return ret
 
 
 # {'passingTimes': [{'destination': {'fr': 'MOORTEBEEK', 'nl': 'MOORTEBEEK'}, 'expectedArrivalTime': '2020-02-10T17:36:00+01:00', 'lineId': '46'}
