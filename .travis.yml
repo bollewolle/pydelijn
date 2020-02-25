@@ -6,24 +6,7 @@ stages:
 
 jobs:
   include:
-    # Test install the module
-    - stage: install
-      install: pip install -U pip setuptools wheel
-      name: "Setup test"
-      python: "3.6"
-      script:
-        - python setup.py install
-
-    # Test the install of the module
-    - stage: test_install
-      install: pip install -U pip setuptools wheel
-      name: "Test setup"
-      python: "3.6"
-      script:
-        - python tests/travis_test_install.py
-
-
-    # Deploy to PyPi if all tests pass and change was done on master.
+    # Deploy to PyPi
     - stage: deploy
       name: "Deploy to PyPi"
       install: pip install -U pip setuptools wheel
