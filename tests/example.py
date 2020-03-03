@@ -17,9 +17,11 @@ async def test_pydelijn():
                           custom_session,
                           True)
     await delijndata.get_passages()
-    await custom_session.close()
-
     print_data(delijndata)
+    stopname = await delijndata.get_stopname()
+    print("----------------------------------------")
+    print("Stop Name: %s" % stopname)
+    await custom_session.close()
 
 
 def print_data(delijndata):
@@ -27,7 +29,6 @@ def print_data(delijndata):
     for line in delijndata.passages:
         print("----------------------------------------")
         print("Passage #: %s" % (line['passage']))
-        print("Stop Name: %s" % (line['stopname']))
         print("Line Number (technical): %s" % (line['line_number']))
         print("Line Number (public): %s" % (line['line_number_public']))
         print("Line Description: %s" % (line['line_desc']))

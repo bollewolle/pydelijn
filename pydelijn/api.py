@@ -9,8 +9,7 @@ file for more details.
 """
 from datetime import datetime
 import pytz
-
-from .common import BASE_URL, LOGGER
+from .common import BASE_URL, LOGGER, CommonFunctions
 
 
 def convert_to_utc(localtime, timeformat):
@@ -46,9 +45,30 @@ class Passages():
         self._passages = []
         self.utcoutput = utcoutput
 
+    async def get_stopname(self):
+        """Get the stop name from the stopid."""
+        if self.stopname == self.stopid:
+            selfcreatedsession = False
+            if self.session is None:
+                selfcreatedsession = True
+            entitynum = self.stopid[:1]
+            endpointstop = '{}haltes/{}/{}'.format(BASE_URL,
+                                                   str(entitynum),
+                                                   str(self.stopid))
+            common = CommonFunctions(self.loop, self.session,
+                                     self.subscriptionkey)
+            resultstop = await common.api_call(endpointstop)
+            if resultstop is not None:
+                self.stopname = "{}, {}".format(
+                    str(resultstop.get('omschrijving')),
+                    str(resultstop.get('omschrijvingGemeente')))
+            if selfcreatedsession is True:
+                await common.close()
+        return self.stopname
+
+
     async def get_passages(self):
         """Get passages info from stopid."""
-        from .common import CommonFunctions
         selfcreatedsession = False
         if self.session is None:
             selfcreatedsession = True
@@ -66,15 +86,6 @@ class Passages():
                     {str(colours.get('code')): colours.get('hex')}
                 )
 
-        if self.stopname != self.stopid:
-            endpointstop = '{}haltes/{}/{}'.format(BASE_URL,
-                                                   str(entitynum),
-                                                   str(self.stopid))
-            resultstop = await common.api_call(endpointstop)
-            if resultstop is not None:
-                self.stopname = "{}, {}".format(
-                    str(resultstop.get('omschrijving')),
-                    str(resultstop.get('omschrijvingGemeente')))
 
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL,
                                                              str(entitynum),
@@ -176,8 +187,6 @@ class Passages():
                                 passages.append({
                                     'passage':
                                         index,
-                                    'stopname':
-                                        self.stopname,
                                     'line_number':
                                         linenumber,
                                     'direction':
