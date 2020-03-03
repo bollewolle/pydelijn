@@ -40,6 +40,7 @@ class Passages():
         self.loop = loop
         self.session = session
         self.stopid = str(stopid)
+        self.stopname = self.stopid
         self.maxpassages = maxpassages
         self.subscriptionkey = subscriptionkey
         self._passages = []
@@ -65,15 +66,15 @@ class Passages():
                     {str(colours.get('code')): colours.get('hex')}
                 )
 
-        stopname = str(self.stopid)
-        endpointstop = '{}haltes/{}/{}'.format(BASE_URL,
-                                               str(entitynum),
-                                               str(self.stopid))
-        resultstop = await common.api_call(endpointstop)
-        if resultstop is not None:
-            stopname = "{}, {}".format(
-                str(resultstop.get('omschrijving')),
-                str(resultstop.get('omschrijvingGemeente')))
+        if self.stopname != self.stopid:
+            endpointstop = '{}haltes/{}/{}'.format(BASE_URL,
+                                                   str(entitynum),
+                                                   str(self.stopid))
+            resultstop = await common.api_call(endpointstop)
+            if resultstop is not None:
+                self.stopname = "{}, {}".format(
+                    str(resultstop.get('omschrijving')),
+                    str(resultstop.get('omschrijvingGemeente')))
 
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL,
                                                              str(entitynum),
@@ -176,7 +177,7 @@ class Passages():
                                     'passage':
                                         index,
                                     'stopname':
-                                        stopname,
+                                        self.stopname,
                                     'line_number':
                                         linenumber,
                                     'direction':
