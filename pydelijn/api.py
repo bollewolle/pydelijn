@@ -44,6 +44,9 @@ class Passages():
         self.subscriptionkey = subscriptionkey
         self._passages = []
         self.utcoutput = utcoutput
+        self._colourshex = None
+        self._linecolours = {}
+        self._linepublic = {}
 
     async def get_stopname(self):
         """Get the stop name from the stopid."""
@@ -66,6 +69,62 @@ class Passages():
                 await common.close()
         return self.stopname
 
+    async def get_colourshex(self):
+        """Get the colours hex codes"""
+        if self._colourshex is None:
+            selfcreatedsession = False
+            if self.session is None:
+                selfcreatedsession = True
+            endpointcolours = '{}kleuren/'.format(BASE_URL)
+            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+            colourshex = {}
+            resultcolours = await common.api_call(endpointcolours)
+            if resultcolours is not None:
+                for colours in resultcolours['kleuren']:
+                    colourshex.update(
+                        {str(colours.get('code')): colours.get('hex')}
+                    )
+                self._colourshex = colourshex
+            if selfcreatedsession is True:
+                await common.close()
+        return self._colourshex
+
+    async def get_linecolours(self, ent_num, linenumber):
+        if (ent_num, linenumber) not in self._linecolours:
+            selfcreatedsession = False
+            if self.session is None:
+                selfcreatedsession = True
+            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+            endpointlinecolours = ("{}lijnen/{}/"
+                                   "{}/lijnkleuren".format(
+                                       BASE_URL,
+                                       str(ent_num),
+                                       str(linenumber)))
+            resultlinecolours = await common.api_call(
+                endpointlinecolours)
+            if resultlinecolours is not None:
+                self._linecolours[(ent_num, linenumber)] = resultlinecolours
+            if selfcreatedsession is True:
+                await common.close()
+        return self._linecolours[(ent_num, linenumber)]
+
+    async def get_linepublic(self, ent_num, linenumber):
+        if (ent_num, linenumber) not in self._linepublic:
+            selfcreatedsession = False
+            if self.session is None:
+                selfcreatedsession = True
+            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+            endpointlinepublic = '{}lijnen/{}/{}'.format(
+                BASE_URL,
+                str(ent_num),
+                str(linenumber))
+            resultlinepublic = await common.api_call(
+                endpointlinepublic)
+            if resultlinepublic is not None:
+                self._linepublic[(ent_num, linenumber)] = resultlinepublic
+            if selfcreatedsession is True:
+                await common.close()
+        return self._linepublic[(ent_num, linenumber)]
 
     async def get_passages(self):
         """Get passages info from stopid."""
@@ -77,15 +136,7 @@ class Passages():
         passages = []
         tzone = pytz.timezone('Europe/Brussels')
 
-        endpointcolours = '{}kleuren/'.format(BASE_URL)
-        colourshex = {}
-        resultcolours = await common.api_call(endpointcolours)
-        if resultcolours is not None:
-            for colours in resultcolours['kleuren']:
-                colourshex.update(
-                    {str(colours.get('code')): colours.get('hex')}
-                )
-
+        colourshex = await self.get_colourshex()
 
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL,
                                                              str(entitynum),
@@ -145,12 +196,7 @@ class Passages():
                                 diff = dt_sch_local - dt_now_local
                                 due_in_min = int(diff.total_seconds() / 60)
 
-                        endpointlinepublic = '{}lijnen/{}/{}'.format(
-                            BASE_URL,
-                            str(ent_num),
-                            str(linenumber))
-                        resultlinepublic = await common.api_call(
-                            endpointlinepublic)
+                        resultlinepublic = await self.get_linepublic(ent_num, linenumber)
                         if resultlinepublic is not None:
                             linenumberpublic = resultlinepublic.get(
                                 'lijnnummerPubliek')
@@ -159,13 +205,7 @@ class Passages():
                             linetransporttype = resultlinepublic.get(
                                 'vervoertype')
 
-                            endpointlinecolours = ("{}lijnen/{}/"
-                                                   "{}/lijnkleuren".format(
-                                                       BASE_URL,
-                                                       str(ent_num),
-                                                       str(linenumber)))
-                            resultlinecolours = await common.api_call(
-                                endpointlinecolours)
+                            resultlinecolours = await self.get_linecolours(ent_num, linenumber)
                             if resultlinecolours is not None:
                                 linenumcolfront = resultlinecolours.get(
                                     'voorgrond').get('code')
