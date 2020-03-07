@@ -69,14 +69,10 @@ class Passages():
                 await common.close()
         return self.stopname
 
-    async def get_colourshex(self):
+    async def get_colourshex(self, common):
         """Get the colours hex codes"""
         if self._colourshex is None:
-            selfcreatedsession = False
-            if self.session is None:
-                selfcreatedsession = True
             endpointcolours = '{}kleuren/'.format(BASE_URL)
-            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
             colourshex = {}
             resultcolours = await common.api_call(endpointcolours)
             if resultcolours is not None:
@@ -85,16 +81,10 @@ class Passages():
                         {str(colours.get('code')): colours.get('hex')}
                     )
                 self._colourshex = colourshex
-            if selfcreatedsession is True:
-                await common.close()
         return self._colourshex
 
-    async def get_linecolours(self, ent_num, linenumber):
+    async def get_linecolours(self, common, ent_num, linenumber):
         if (ent_num, linenumber) not in self._linecolours:
-            selfcreatedsession = False
-            if self.session is None:
-                selfcreatedsession = True
-            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
             endpointlinecolours = ("{}lijnen/{}/"
                                    "{}/lijnkleuren".format(
                                        BASE_URL,
@@ -104,16 +94,10 @@ class Passages():
                 endpointlinecolours)
             if resultlinecolours is not None:
                 self._linecolours[(ent_num, linenumber)] = resultlinecolours
-            if selfcreatedsession is True:
-                await common.close()
         return self._linecolours[(ent_num, linenumber)]
 
-    async def get_linepublic(self, ent_num, linenumber):
+    async def get_linepublic(self, common, ent_num, linenumber):
         if (ent_num, linenumber) not in self._linepublic:
-            selfcreatedsession = False
-            if self.session is None:
-                selfcreatedsession = True
-            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
             endpointlinepublic = '{}lijnen/{}/{}'.format(
                 BASE_URL,
                 str(ent_num),
@@ -122,8 +106,6 @@ class Passages():
                 endpointlinepublic)
             if resultlinepublic is not None:
                 self._linepublic[(ent_num, linenumber)] = resultlinepublic
-            if selfcreatedsession is True:
-                await common.close()
         return self._linepublic[(ent_num, linenumber)]
 
     async def get_passages(self):
@@ -136,7 +118,7 @@ class Passages():
         passages = []
         tzone = pytz.timezone('Europe/Brussels')
 
-        colourshex = await self.get_colourshex()
+        colourshex = await self.get_colourshex(common)
 
         endpointrealtime = '{}haltes/{}/{}/real-time'.format(BASE_URL,
                                                              str(entitynum),
@@ -196,7 +178,7 @@ class Passages():
                                 diff = dt_sch_local - dt_now_local
                                 due_in_min = int(diff.total_seconds() / 60)
 
-                        resultlinepublic = await self.get_linepublic(ent_num, linenumber)
+                        resultlinepublic = await self.get_linepublic(common, ent_num, linenumber)
                         if resultlinepublic is not None:
                             linenumberpublic = resultlinepublic.get(
                                 'lijnnummerPubliek')
@@ -205,7 +187,7 @@ class Passages():
                             linetransporttype = resultlinepublic.get(
                                 'vervoertype')
 
-                            resultlinecolours = await self.get_linecolours(ent_num, linenumber)
+                            resultlinecolours = await self.get_linecolours(common, ent_num, linenumber)
                             if resultlinecolours is not None:
                                 linenumcolfront = resultlinecolours.get(
                                     'voorgrond').get('code')
