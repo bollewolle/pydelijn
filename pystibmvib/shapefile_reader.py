@@ -6,15 +6,15 @@ import shapefile
 from .common import LOGGER
 
 SEP = os.sep
-SHAPEFILESFOLDERPATH = tempfile.gettempdir()+SEP+"stibmvibshapefiles"
+SHAPEFILESFOLDERPATH = tempfile.gettempdir() + SEP + "stibmvibshapefiles"
 print(SHAPEFILESFOLDERPATH)
 TIMESTAMPFILENAME = "timestamp"
 LINES_FILENAME = "LIGNES_BRUTES"
 STOPS_FILENAME = "ACTU_STOPS"
 LINE_TECH_ID_INDEX = 0
 STOP_ID_INDEX = 4
-STOP_NAME_INDEX = 5
-LINE_NUMBER_INDEX = 11
+STOP_NAME_INDEX = 6
+LINE_NUMBER_INDEX = 0
 DELTA_MAX_TIMESTAMP = 1 * 60 * 60 * 24 * 7  # 1 week
 
 
@@ -48,7 +48,8 @@ class ShapefileReader():
             now = time.time()
             if now - timestamp > DELTA_MAX_TIMESTAMP:
                 must_update = True
-                LOGGER.info(f"Delta since last update is {now-timestamp} which is greater than {DELTA_MAX_TIMESTAMP}. Invalidating files...")
+                LOGGER.info(
+                    f"Delta since last update is {now - timestamp} which is greater than {DELTA_MAX_TIMESTAMP}. Invalidating files...")
 
         if must_update:
             LOGGER.info("Shapefiles validity outdated, updating them...")
@@ -68,7 +69,7 @@ class ShapefileReader():
                 zip_filename = "shapefiles.zip"
                 # save data to disk
                 LOGGER.info("Saving to " + str(zip_filename))
-                zip_path = SHAPEFILESFOLDERPATH+SEP+zip_filename
+                zip_path = SHAPEFILESFOLDERPATH + SEP + zip_filename
                 with open(zip_path, 'wb') as output:
                     output.write(zipped_data)
                     output.close()
@@ -90,7 +91,7 @@ class ShapefileReader():
 
     async def get_line_info(self, line_id):
         await self._refresh_shapefiles()
-
+        print(SHAPEFILESFOLDERPATH + SEP + LINES_FILENAME)
         sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + LINES_FILENAME)
 
         for record in sf.records():
@@ -102,17 +103,22 @@ class ShapefileReader():
         if filtered_out_stop_ids is None:
             filtered_out_stop_ids = []
         await self._refresh_shapefiles()
+        print(SHAPEFILESFOLDERPATH, stop_name, filtered_out_stop_ids)
 
         sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + STOPS_FILENAME)
 
         possible_lines = {}
         for record in sf.records():
-            if stop_name.upper() == record[STOP_NAME_INDEX]:
+            print(record)
+            if stop_name.upper() == str(record[STOP_NAME_INDEX]).upper() or stop_name.upper() == str(
+                    record[STOP_NAME_INDEX + 1]).upper():
                 stop_id = record[STOP_ID_INDEX]
+                print(stop_id, filtered_out_stop_ids)
                 if stop_id not in filtered_out_stop_ids:
                     if record[LINE_TECH_ID_INDEX] not in possible_lines.keys():
                         possible_lines[record[LINE_TECH_ID_INDEX]] = []
-                    possible_lines[record[LINE_TECH_ID_INDEX]].append(await self.get_line_info(record[LINE_NUMBER_INDEX]))
+                    possible_lines[record[LINE_TECH_ID_INDEX]].append(
+                        await self.get_line_info(record[LINE_NUMBER_INDEX]))
                     possible_lines[record[LINE_TECH_ID_INDEX]][-1].update({"stop_id": stop_id})
 
                     # for convenience we add also the correspondance between business id for line and line info

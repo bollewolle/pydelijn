@@ -1,30 +1,39 @@
 """Example usage of pystibmvib."""
+import asyncio
+import unittest
+
 import aiohttp
 
-from pystibmvib.api import Passages
+from pystibmvib.STIBAPIClient import STIBAPIClient
+from pystibmvib.STIBService import STIBService
+
+CLIENT_ID = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'
+CLIENT_SECRET = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
+
+class TestPassages(unittest.TestCase):
+    def setUp(self):
+        self.LOOP = asyncio.get_event_loop()
+
+    def tearDown(self):
+        self.LOOP.close()
+
+    def test_filtered_out(self):
+        async def go(LOOP):
+            stop_name = "scherdemael"
+            filtered_out_stop_ids = ['3713']
+            custom_session = aiohttp.ClientSession()
+
+            APIClient = STIBAPIClient(LOOP, custom_session, CLIENT_ID, CLIENT_SECRET)
+
+            service = STIBService(APIClient)
+            print(await service.getPassages(stop_name, [(46, "Glibert")]))
+
+            await custom_session.close()
+
+        self.LOOP.run_until_complete(go(self.LOOP))
+
+if __name__ == '__main__':
+    unittest.main()
 
 
-async def test_shapefile_reader():
-    """Example usage of pystibmvib."""
-    client_id = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'
-    client_secret = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
 
-
-    stop_name = "scherdemael"
-    filtered_out_stop_ids = ['3713']
-    custom_session = aiohttp.ClientSession()
-
-    r = Passages(LOOP, stop_name, client_id, client_secret, filtered_out_stop_ids=filtered_out_stop_ids, session=custom_session, time_ordered_result=True)
-
-    await r.update_passages()
-    print(r.passages)
-
-    await custom_session.close()
-
-
-
-import asyncio
-
-LOOP = asyncio.get_event_loop()
-LOOP.run_until_complete(test_shapefile_reader())
-LOOP.close()
