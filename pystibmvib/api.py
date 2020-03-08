@@ -63,7 +63,7 @@ def sort_and_truncate_to(number, passingTimes):
     return res
 
 
-class Passages():
+class Passages:
     """A class to get passage information."""
 
     def __init__(self,
@@ -104,7 +104,6 @@ class Passages():
                 sid = lineinfo["stop_id"]
                 if sid not in stop_ids:
                     stop_ids.append(sid)
-
         selfcreatedsession = False
         if self.session is None:
             selfcreatedsession = True
@@ -128,7 +127,7 @@ class Passages():
                 LOGGER.info(now)
             print("Got result from "+call_URL_suffix+" : "+str(raw_result))
             json_result = json.loads(raw_result)
-
+        print(stop_ids, self._linesinfo)
         json_result = {'points': []}
         for stop_id in stop_ids:
             call_URL_suffix = PASSING_TIME_BY_POINT_SUFFIX + stop_id
