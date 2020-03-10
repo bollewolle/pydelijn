@@ -4,11 +4,12 @@ import unittest
 
 import aiohttp
 
-from pystibmvib.STIBAPIClient import STIBAPIClient
 from pystibmvib.STIBService import STIBService
+from tests.pystibmvib import MockAPIClient
 
-CLIENT_ID = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'
-CLIENT_SECRET = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
+# CLIENT_ID = 'Wirff1HT1tTH7mLX1dMQAbOEHDoa'
+# CLIENT_SECRET = 'tYKqSKbmjw3hKsoNtaaKKtXXP0sa'
+
 
 class TestPassages(unittest.TestCase):
     def setUp(self):
@@ -23,10 +24,10 @@ class TestPassages(unittest.TestCase):
             filtered_out_stop_ids = ['3713']
             custom_session = aiohttp.ClientSession()
 
-            APIClient = STIBAPIClient(LOOP, custom_session, CLIENT_ID, CLIENT_SECRET)
+            APIClient = MockAPIClient()
 
             service = STIBService(APIClient)
-            print(await service.getPassages(stop_name, [(46, "Glibert")]))
+            print(await service.get_passages(stop_name, [(46, "Glibert")]))
 
             await custom_session.close()
 
