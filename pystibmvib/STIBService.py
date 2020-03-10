@@ -9,6 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 PASSING_TIME_BY_POINT_SUFFIX = "/OperationMonitoring/4.0/PassingTimeByPoint/"
 
+
 class STIBService:
     def __init__(self, stib_api_client: STIBAPIClient):
         self._shapefile_service = ShapefileService(stib_api_client)
@@ -26,11 +27,14 @@ class STIBService:
         for atomic in atomic_stop_infos:
             call_URL_suffix = PASSING_TIME_BY_POINT_SUFFIX + atomic.get_stop_id()
 
-            raw_passages = json.loads(await self.api_client.api_call(call_URL_suffix))
+            raw_passages = await self.api_client.api_call(call_URL_suffix)
+            print(raw_passages)
+            raw_passages = json.loads(raw_passages)
             for point in raw_passages["points"]:
                 for json_passage in point["passingTimes"]:
                     print(json_passage)
-                    passages.append(Passage(point["pointId"], json_passage["lineId"], json_passage["destination"], json_passage["expectedArrivalTime"]))
+                    passages.append(Passage(point["pointId"], json_passage["lineId"], json_passage["destination"], json_passage["expectedArrivalTime"], await self._shapefile_service.get_line_info(json_passage["lineId"])))
             print(raw_passages)
+        print(passages)
 
         return passages

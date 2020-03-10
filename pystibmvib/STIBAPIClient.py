@@ -1,13 +1,14 @@
 """Common attributes and functions."""
 import asyncio
 import base64
+import logging
 import time
 
 import aiohttp
 import async_timeout
 from aiohttp import ClientSession
 
-from .STIBService import LOGGER
+LOGGER = logging.getLogger(__name__)
 
 API_BASE_URL = 'https://opendata-api.stib-mivb.be'
 

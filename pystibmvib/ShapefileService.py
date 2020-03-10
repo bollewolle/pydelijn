@@ -24,26 +24,33 @@ DELTA_MAX_TIMESTAMP = 1 * 60 * 60 * 24 * 7  # 1 week
 class ShapefileService:
     def __init__(self, stib_api_client):
         self.api_client = stib_api_client
+        self.lines_cache = {}
+        self.stops_cache = {}
 
-    async def get_line_info(self, line_nr):
+    async def get_line_info(self, line_nr: int):
         await self._refresh_shapefiles()
-        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + LINES_FILENAME)
-        for record in sf.records():
-            record = record.as_dict()
-            current_line_nr, line_type = record["LIGNE"][:-1], record["LIGNE"][-1:]
-            if int(line_nr) == int(current_line_nr):
-                return LineInfo(int(current_line_nr), line_type.upper(), record["COLOR_HEX"])
+        if line_nr not in self.lines_cache.keys():
+            sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + LINES_FILENAME)
+            for record in sf.records():
+                record = record.as_dict()
+                current_line_nr, line_type = record["LIGNE"][:-1], record["LIGNE"][-1:]
+                if int(line_nr) == int(current_line_nr):
+                    self.lines_cache[line_nr] = LineInfo(int(current_line_nr), line_type.upper(), record["COLOR_HEX"])
+                    break
+        return self.lines_cache[line_nr]
 
     async def get_stop_infos(self, stop_name: str):
         await self._refresh_shapefiles()
-        sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + STOPS_FILENAME)
-        res: StopInfo = StopInfo(stop_name)
-        for record in sf.records():
-            record = record.as_dict()
-            if record["alpha_fr"].upper() == stop_name.upper() or record["alpha_nl"].upper() == stop_name.upper():
-                res.add_stop(record["stop_id"], record["numero_lig"], record["variante"], record["terminus"])
-                res.add_line_info(await self.get_line_info(record["numero_lig"]))
-        return res
+        if stop_name not in self.stops_cache.keys():
+            sf = shapefile.Reader(SHAPEFILESFOLDERPATH + SEP + STOPS_FILENAME)
+            res: StopInfo = StopInfo(stop_name)
+            for record in sf.records():
+                record = record.as_dict()
+                if record["alpha_fr"].upper() == stop_name.upper() or record["alpha_nl"].upper() == stop_name.upper():
+                    res.add_stop(record["stop_id"], record["numero_lig"], record["variante"], record["terminus"])
+                    res.add_line_info(await self.get_line_info(record["numero_lig"]))
+            self.stops_cache[stop_name] = res
+        return self.stops_cache[stop_name]
 
     async def _refresh_shapefiles(self):
         """ Get most recent file info if not in local cache (api for files can be called only once per minute.
@@ -79,6 +86,8 @@ class ShapefileService:
 
                 # TODO os.remove(zip_filename)
                 LOGGER.info("Finished updating Shapefiles!")
+                self.lines_cache = {}
+                self.stops_cache = {}
             else:
                 LOGGER.error("Unable to update Shapefiles...")
 
