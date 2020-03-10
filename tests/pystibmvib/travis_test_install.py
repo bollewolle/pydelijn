@@ -18,17 +18,15 @@ class TestPassages(unittest.TestCase):
     def test_filtered_out(self):
         async def go(LOOP):
             stop_name = "scherdemael"
-            filtered_out_stop_ids = ['3713']
-            custom_session = aiohttp.ClientSession()
+            lines_filter = [(46, "Glibert")]
 
             APIClient = MockAPIClient()
 
             service = STIBService(APIClient)
-            print(await service.get_passages(stop_name, [(46, "Glibert")]))
-
-            await custom_session.close()
+            print(await service.get_passages(stop_name, lines_filter))
 
         self.LOOP.run_until_complete(go(self.LOOP))
+
 
 if __name__ == '__main__':
     unittest.main()
