@@ -1,8 +1,10 @@
 """Common attributes and functions."""
 from pystibmvib.STIBService import PASSING_TIME_BY_POINT_SUFFIX
 from pystibmvib.ShapefileService import ENDPOINT_SHAPEFILES
+from pystibmvib import AbstractSTIBAPIClient
 
-class MockAPIClient:
+
+class MockAPIClient(AbstractSTIBAPIClient):
     """A class for common functions."""
 
     def __init__(self):
