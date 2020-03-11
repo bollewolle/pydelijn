@@ -28,7 +28,25 @@ class CommonFunctions():
                 LOGGER.debug("Endpoint URL: %s", str(endpoint))
                 response = await self.session.get(url=endpoint,
                                                   headers=headers)
-                data = await response.json()
+                if response.status == 200:
+                    try:
+                        data = await response.json()
+                    except ValueError as exception:
+                        message = "Server gave incorrect data"
+                        raise Exception(message) from exception
+
+                elif response.status == 401:
+                    message = "401: Acces token might be incorrect"
+                    raise HttpException(message, await response.text(), response.status)
+
+                elif response.status == 404:
+                    message = "404: incorrect API request"
+                    raise HttpException(message, await response.text(), response.status)
+
+                else:
+                    message = f"Unexpected status code {response.status}."
+                    raise HttpException(message, await response.text(), response.status)
+
         except aiohttp.ClientError as error:
             LOGGER.error("Error connecting to De Lijn API: %s", error)
         except asyncio.TimeoutError as error:
@@ -38,3 +56,13 @@ class CommonFunctions():
     async def close(self):
         """Close the session."""
         await self.session.close()
+
+class HttpException(Exception):
+    """ HTTP exception class with message text, and status code"""
+
+    def __init__(self, message, text, status_code):
+
+        super().__init__(message)
+
+        self.status_code = status_code
+        self.text = text
