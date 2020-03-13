@@ -36,6 +36,7 @@ def print_data(delijndata):
         print("Final Destination: %s" % (line['final_destination']))
         print("Due At (schedule): %s" % (line['due_at_schedule']))
         print("Due At (real-time): %s" % (line['due_at_realtime']))
+        print("is real-time: %s" % (line['is_realtime']))
         print("Due In (min): %s" % (line['due_in_min']))
         print("Line Colour - Front: %s - Hex: %s" % (
             line['line_number_colourFront'],

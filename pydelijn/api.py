@@ -90,6 +90,16 @@ class Passages():
                         final_destination = passage.get('bestemming')
                         due_at_schedule = passage.get('dienstregelingTijdstip')
                         due_at_realtime = passage.get('real-timeTijdstip')
+                        realtime_info = passage.get('predictionStatussen')
+                        if realtime_info[0] == 'GEENREALTIME':
+                            is_realtime = False
+                        elif realtime_info[0] == 'REALTIME':
+                            is_realtime = True
+                        else:
+                            is_realtime = False
+                            LOGGER.warning("unknown realtime info: %s",
+                                           realtime_info)
+
                         due_in_min = None
 
                         timeformat = '%Y-%m-%dT%H:%M:%S'
@@ -189,6 +199,8 @@ class Passages():
                                         due_at_realtime,
                                     'due_in_min':
                                         due_in_min,
+                                    'is_realtime':
+                                        is_realtime,
                                     'line_number_public':
                                         linenumberpublic,
                                     'line_desc':
