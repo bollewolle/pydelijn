@@ -78,6 +78,7 @@ class Passages:
         return self._colourshex
 
     async def get_linecolours(self, common, ent_num, linenumber):
+        """Get the colours of the line"""
         if (ent_num, linenumber) not in self._linecolours:
             endpointlinecolours = "{}lijnen/{}/" "{}/lijnkleuren".format(
                 BASE_URL, str(ent_num), str(linenumber)
@@ -88,6 +89,7 @@ class Passages:
         return self._linecolours[(ent_num, linenumber)]
 
     async def get_linepublic(self, common, ent_num, linenumber):
+        """Get the line information"""
         if (ent_num, linenumber) not in self._linepublic:
             endpointlinepublic = "{}lijnen/{}/{}".format(
                 BASE_URL, str(ent_num), str(linenumber)
