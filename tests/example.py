@@ -1,7 +1,7 @@
 """Example usage of pydelijn."""
 import asyncio
 import aiohttp
-from pydelijn.api import Passages
+from .pydelijn.api import Passages
 
 
 async def test_pydelijn():
