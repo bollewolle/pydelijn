@@ -21,7 +21,7 @@ jobs:
       install: pip install pylint
       name: Linting with pylint
       python: '3.6'
-      script: find . -name \*.py -exec pylint --disable=F0401,W0613,R0801,R0913,R0914,R0915,R1702,R0912
+      script: find . -name \*.py -exec pylint --disable=C0301,C0330,F0401,W0613,R0801,R0913,R0914,R0915,R1702,R0912,R0902
         {} +
     - stage: linting
       install: pip install pyflakes

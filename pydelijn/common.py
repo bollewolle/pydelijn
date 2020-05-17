@@ -5,10 +5,10 @@ import async_timeout
 import aiohttp
 
 LOGGER = logging.getLogger(__name__)
-BASE_URL = 'https://api.delijn.be/DLKernOpenData/v1/beta/'
+BASE_URL = "https://api.delijn.be/DLKernOpenData/v1/beta/"
 
 
-class CommonFunctions():
+class CommonFunctions:
     """A class for common functions."""
 
     def __init__(self, loop, session, subscriptionkey):
@@ -19,15 +19,14 @@ class CommonFunctions():
 
     async def api_call(self, endpoint):
         """Call the API."""
-        headers = {'Ocp-Apim-Subscription-Key': self.subscriptionkey}
+        headers = {"Ocp-Apim-Subscription-Key": self.subscriptionkey}
         data = None
         if self.session is None:
             self.session = aiohttp.ClientSession()
         try:
             async with async_timeout.timeout(5, loop=self.loop):
                 LOGGER.debug("Endpoint URL: %s", str(endpoint))
-                response = await self.session.get(url=endpoint,
-                                                  headers=headers)
+                response = await self.session.get(url=endpoint, headers=headers)
                 if response.status == 200:
                     try:
                         data = await response.json()
@@ -57,11 +56,12 @@ class CommonFunctions():
         """Close the session."""
         await self.session.close()
 
+
 class HttpException(Exception):
-    """ HTTP exception class with message text, and status code"""
+    """HTTP exception class with message text, and status code."""
 
     def __init__(self, message, text, status_code):
-
+        """Initialize the class."""
         super().__init__(message)
 
         self.status_code = status_code
