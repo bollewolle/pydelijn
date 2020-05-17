@@ -58,10 +58,10 @@ class CommonFunctions:
 
 
 class HttpException(Exception):
-    """ HTTP exception class with message text, and status code"""
+    """HTTP exception class with message text, and status code."""
 
     def __init__(self, message, text, status_code):
-
+        """Initialize the class."""
         super().__init__(message)
 
         self.status_code = status_code
