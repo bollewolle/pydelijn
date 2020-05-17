@@ -17,9 +17,9 @@ setuptools.setup(
     url="https://github.com/bollewolle/pydelijn",
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
-        'aiohttp',
-        'async_timeout',
-        'pytz'
+        'aiohttp==3.6.2',
+        'async_timeout==3.0.1',
+        'pytz==2020.1'
     ],
     license='MIT',
     classifiers=(
