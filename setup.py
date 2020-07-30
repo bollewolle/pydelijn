@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pydelijn",
-    version="0.6.0",
+    version="0.6.1",
     author="bollewolle",
     author_email="dev@bollewolle.be",
     python_requires=">=3.5.0",
@@ -17,9 +17,9 @@ setuptools.setup(
     url="https://github.com/bollewolle/pydelijn",
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
-        'aiohttp==3.6.2',
-        'async_timeout==3.0.1',
-        'pytz==2020.1'
+        'aiohttp>=3.6.2,<4.0',
+        'async_timeout>=3.0.1,<4.0',
+        'pytz>=2020.1'
     ],
     license='MIT',
     classifiers=(
