@@ -24,7 +24,7 @@ class CommonFunctions:
         if self.session is None:
             self.session = aiohttp.ClientSession()
         try:
-            async with async_timeout.timeout(5, loop=self.loop):
+            async with async_timeout.timeout(5):
                 LOGGER.debug("Endpoint URL: %s", str(endpoint))
                 response = await self.session.get(url=endpoint, headers=headers)
                 if response.status == 200:
