@@ -11,7 +11,7 @@ async def test_pydelijn():
     maxpassages = 10
     custom_session = aiohttp.ClientSession()
     delijndata = Passages(
-        LOOP, stopid, maxpassages, subscriptionkey, custom_session, True
+        stopid, maxpassages, subscriptionkey, custom_session, True
     )
     await delijndata.get_passages()
     print_data(delijndata)
