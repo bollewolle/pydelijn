@@ -11,9 +11,8 @@ BASE_URL = "https://api.delijn.be/DLKernOpenData/v1/beta/"
 class CommonFunctions:
     """A class for common functions."""
 
-    def __init__(self, loop, session, subscriptionkey):
+    def __init__(self, session, subscriptionkey):
         """Initialize the class."""
-        self.loop = loop
         self.session = session
         self.subscriptionkey = subscriptionkey
 
@@ -24,7 +23,7 @@ class CommonFunctions:
         if self.session is None:
             self.session = aiohttp.ClientSession()
         try:
-            async with async_timeout.timeout(5, loop=self.loop):
+            async with async_timeout.timeout(5):
                 LOGGER.debug("Endpoint URL: %s", str(endpoint))
                 response = await self.session.get(url=endpoint, headers=headers)
                 if response.status == 200:

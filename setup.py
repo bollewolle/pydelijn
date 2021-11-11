@@ -25,7 +25,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
         'aiohttp>=3.6.2,<4.0',
-        'async_timeout>=3.0.1,<4.0',
+        'async_timeout>=4.0.0,<5.0',
         'pytz>=2020.1'
     ],
     license='MIT',

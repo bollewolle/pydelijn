@@ -29,10 +29,9 @@ class Passages:
     """A class to get passage information."""
 
     def __init__(
-        self, loop, stopid, maxpassages, subscriptionkey, session=None, utcoutput=None
+        self, stopid, maxpassages, subscriptionkey, session=None, utcoutput=None
     ):
         """Initialize the class."""
-        self.loop = loop
         self.session = session
         self.stopid = str(stopid)
         self.stopname = self.stopid
@@ -54,7 +53,7 @@ class Passages:
             endpointstop = "{}haltes/{}/{}".format(
                 BASE_URL, str(entitynum), str(self.stopid)
             )
-            common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+            common = CommonFunctions(self.session, self.subscriptionkey)
             resultstop = await common.api_call(endpointstop)
             if resultstop is not None:
                 self.stopname = "{}, {}".format(
@@ -105,7 +104,7 @@ class Passages:
         if self.session is None:
             selfcreatedsession = True
         entitynum = self.stopid[:1]
-        common = CommonFunctions(self.loop, self.session, self.subscriptionkey)
+        common = CommonFunctions(self.session, self.subscriptionkey)
         passages = []
         tzone = pytz.timezone("Europe/Brussels")
 
