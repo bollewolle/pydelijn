@@ -1,12 +1,19 @@
 """Setup tools config."""
+import re
+
 import setuptools
 
 with open("README.md", "r") as fh:
     LONG = fh.read()
 
+with open("pydelijn/__init__.py", "r") as fd:
+    version = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
+    ).group(1)
+
 setuptools.setup(
     name="pydelijn",
-    version="0.6.1",
+    version=version,
     author="bollewolle",
     author_email="dev@bollewolle.be",
     python_requires=">=3.5.0",
