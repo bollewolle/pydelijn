@@ -181,7 +181,7 @@ class Passages:
                             resultlinecolours = await self.get_linecolours(
                                 common, ent_num, linenumber
                             )
-                            if resultlinecolours is not None:
+                            if resultlinecolours is not None and colourshex is not None:
                                 linenumcolfront = resultlinecolours.get(
                                     "voorgrond"
                                 ).get("code")
