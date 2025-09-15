@@ -16,7 +16,7 @@ setuptools.setup(
     version=version,
     author="bollewolle",
     author_email="dev@bollewolle.be",
-    python_requires=">=3.5.0",
+    python_requires=">=3.11.0",
     description=("Get realtime info on stop passages "
                  "of De Lijn (api.delijn.be)"),
     long_description=LONG,
@@ -25,7 +25,6 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests',)),
     install_requires=[
         'aiohttp>=3.6.2,<4.0',
-        'async_timeout>=4.0.0,<5.0',
         'pytz>=2020.1'
     ],
     license='MIT',

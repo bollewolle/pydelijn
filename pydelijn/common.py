@@ -1,7 +1,6 @@
 """Common attributes and functions."""
 import logging
 import asyncio
-import async_timeout
 import aiohttp
 
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +22,7 @@ class CommonFunctions:
         if self.session is None:
             self.session = aiohttp.ClientSession()
         try:
-            async with async_timeout.timeout(5):
+            async with asyncio.timeout(5):
                 LOGGER.debug("Endpoint URL: %s", str(endpoint))
                 response = await self.session.get(url=endpoint, headers=headers)
                 if response.status == 200:
