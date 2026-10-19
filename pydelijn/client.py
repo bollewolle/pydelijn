@@ -246,6 +246,7 @@ class DeLijnClient:
         """
         url = f"{_KERN_BASE_URL}/haltes/indebuurt/{latitude},{longitude}"
         data = await self._request(url, params={"maxAantalHaltes": max_results})
+        # The spec names the array "punten"; the live API sends "haltes".
         items = data.get("haltes") or data.get("punten") or []
         return [_parse_nearby_stop(item) for item in items]
 
@@ -274,6 +275,9 @@ class DeLijnClient:
         line = await self._get_line(entity, line_number)
 
         due_at_schedule = _parse_timestamp(doorkomst.get("dienstregelingTijdstip"))
+
+        # The OpenAPI spec documents "doorkomstTijdstip", but the live API
+        # (verified 2026-08) sends "real-timeTijdstip". Accept both.
         realtime_value = doorkomst.get("doorkomstTijdstip") or doorkomst.get(
             "real-timeTijdstip"
         )
@@ -384,6 +388,8 @@ class DeLijnClient:
         if self._colour_map is None:
             data = await self._request(f"{_KERN_BASE_URL}/kleuren")
             colour_map: dict[str, str] = {}
+            # The OpenAPI spec names the array "lijnkleuren", but the live API
+            # (verified 2026-08) sends "kleuren". Accept both.
             for entry in data.get("lijnkleuren") or data.get("kleuren") or []:
                 code = entry.get("code")
                 hex_value = entry.get("hex")
