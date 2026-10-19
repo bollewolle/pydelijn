@@ -92,6 +92,8 @@ async def test_get_passages_happy_path_and_caching(
             )
             assert passage.due_at == passage.due_at_realtime
 
+            # Second call must reuse the cached Line (and not touch the
+            # single-use line/colour mocks again).
             second_passages = await client.get_passages(STOP)
             assert second_passages[0].line == passage.line
 
