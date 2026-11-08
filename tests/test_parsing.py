@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any, cast
+
 from aioresponses import aioresponses
 
 from pydelijn import DeLijnClient
@@ -16,13 +18,19 @@ from tests.conftest import (
 )
 
 
-def _doorkomst(halte_realtime: dict) -> dict:
-    return halte_realtime["halteDoorkomsten"][0]["doorkomsten"][0]
+def _doorkomst(halte_realtime: dict[str, Any]) -> dict[str, Any]:
+    return cast(
+        "dict[str, Any]",
+        halte_realtime["halteDoorkomsten"][0]["doorkomsten"][0],
+    )
 
 
 async def test_doorkomst_timestamp_fallback_to_legacy_key(
-    halte_realtime, lijn, lijnkleuren, kleuren
-):
+    halte_realtime: dict[str, Any],
+    lijn: dict[str, Any],
+    lijnkleuren: dict[str, Any],
+    kleuren: dict[str, Any],
+) -> None:
     """DoorkomstTijdstip missing falls back to the legacy real-timeTijdstip key."""
     doorkomst = _doorkomst(halte_realtime)
     del doorkomst["doorkomstTijdstip"]
@@ -43,8 +51,11 @@ async def test_doorkomst_timestamp_fallback_to_legacy_key(
 
 
 async def test_geschrapt_status_marks_cancelled(
-    halte_realtime, lijn, lijnkleuren, kleuren
-):
+    halte_realtime: dict[str, Any],
+    lijn: dict[str, Any],
+    lijnkleuren: dict[str, Any],
+    kleuren: dict[str, Any],
+) -> None:
     """A GESCHRAPT prediction status marks the passage as cancelled."""
     doorkomst = _doorkomst(halte_realtime)
     doorkomst["predictionStatussen"] = ["GESCHRAPT"]
@@ -63,8 +74,11 @@ async def test_geschrapt_status_marks_cancelled(
 
 
 async def test_top_level_status_cancelled_marks_cancelled(
-    halte_realtime, lijn, lijnkleuren, kleuren
-):
+    halte_realtime: dict[str, Any],
+    lijn: dict[str, Any],
+    lijnkleuren: dict[str, Any],
+    kleuren: dict[str, Any],
+) -> None:
     """A top-level status of CANCELLED marks the passage as cancelled."""
     doorkomst = _doorkomst(halte_realtime)
     doorkomst["predictionStatussen"] = ["REALTIME"]
@@ -80,13 +94,15 @@ async def test_top_level_status_cancelled_marks_cancelled(
             passages = await client.get_passages(STOP)
 
     assert passages[0].cancelled is True
-    # Realtime info can still be true even though the ride is cancelled.
     assert passages[0].is_realtime is True
 
 
 async def test_geenrealtime_falls_back_to_schedule_time(
-    halte_realtime, lijn, lijnkleuren, kleuren
-):
+    halte_realtime: dict[str, Any],
+    lijn: dict[str, Any],
+    lijnkleuren: dict[str, Any],
+    kleuren: dict[str, Any],
+) -> None:
     """GEENREALTIME means is_realtime is False and due_at uses the schedule time."""
     doorkomst = _doorkomst(halte_realtime)
     doorkomst["predictionStatussen"] = ["GEENREALTIME"]
@@ -108,7 +124,9 @@ async def test_geenrealtime_falls_back_to_schedule_time(
     assert passage.due_at == passage.due_at_schedule
 
 
-async def test_line_lookup_404_returns_minimal_line(halte_realtime):
+async def test_line_lookup_404_returns_minimal_line(
+    halte_realtime: dict[str, Any],
+) -> None:
     """A 404 on the line lookup still returns the passage, with a bare Line."""
     with aioresponses() as mocked:
         mocked.get(REALTIME_URL, payload=halte_realtime)

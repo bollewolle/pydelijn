@@ -55,3 +55,35 @@ subclasses of `DeLijnError`) rather than logged and swallowed, so callers
 
 You may pass in your own `aiohttp.ClientSession`; if you don't, one is
 created lazily and closed by `client.close()` (or on exiting `async with`).
+
+## Development
+
+Install test dependencies:
+
+```bash
+pip install -e '.[test]'
+```
+
+Run checks:
+
+```bash
+ruff check .
+ruff format --check .
+mypy pydelijn/ tests/ scripts/
+pytest tests/ -q
+```
+
+Type checking runs with `mypy --strict` across the package, tests, and
+scripts. The `aiohttp<3.14` pin in the test dependencies exists because
+aioresponses 0.7.9 mocks `aiohttp.ClientResponse.__init__()` and breaks
+against aiohttp 3.14+, which added a required `stream_writer` kwarg. The
+runtime dependency stays unbounded.
+
+### Live check
+
+`scripts/live_check.py` smoke-tests the client against the real API. Set
+`DELIJN_API_KEY` in the environment first:
+
+```bash
+DELIJN_API_KEY=<subscription key> python scripts/live_check.py [stop_number]
+```

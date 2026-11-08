@@ -12,6 +12,7 @@ import asyncio
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 import aiohttp
 
@@ -19,16 +20,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pydelijn import DeLijnClient
 
-DEFAULT_STOP = "200552"  # Gent Heizijde; pass another stop number as argv[1]
+DEFAULT_STOP = "200552"
 
 
 async def main() -> int:
-    """Run the live checks; return a process exit code."""
+    """Run the live checks. Return a process exit code."""
     api_key = os.environ.get("DELIJN_API_KEY")
     if not api_key:
         print("Set DELIJN_API_KEY in the environment first.")
         return 1
-    stop_number = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_STOP
+    stop_number: str = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_STOP
 
     async with aiohttp.ClientSession() as session:
         client = DeLijnClient(api_key, session=session)
@@ -40,14 +41,14 @@ async def main() -> int:
         async with session.get(
             raw_url, headers={"Ocp-Apim-Subscription-Key": api_key}
         ) as resp:
-            raw = await resp.json()
-        doorkomsten = [
+            raw: dict[str, Any] = await resp.json()
+        doorkomsten: list[dict[str, Any]] = [
             d
             for h in raw.get("halteDoorkomsten") or []
             for d in h.get("doorkomsten") or []
         ]
         if doorkomsten:
-            keys = set(doorkomsten[0])
+            keys: set[str] = set(doorkomsten[0])
             print(f"raw doorkomst keys: {sorted(keys)}")
             for candidate in ("doorkomstTijdstip", "real-timeTijdstip"):
                 print(f"  {candidate}: {'PRESENT' if candidate in keys else 'absent'}")
@@ -60,7 +61,7 @@ async def main() -> int:
             "https://api.delijn.be/DLKernOpenData/api/v1/kleuren",
             headers={"Ocp-Apim-Subscription-Key": api_key},
         ) as resp:
-            kleuren_raw = await resp.json()
+            kleuren_raw: dict[str, Any] = await resp.json()
         print(f"/kleuren top-level keys: {sorted(kleuren_raw)}")
 
         stop = await client.get_stop(stop_number)
@@ -68,16 +69,16 @@ async def main() -> int:
 
         passages = await client.get_passages(stop_number, max_passages=5)
         for p in passages:
-            rt = "realtime" if p.is_realtime else "schedule"
-            flag = " CANCELLED" if p.cancelled else ""
-            number = p.line.public_number or p.line.number
+            rt: str = "realtime" if p.is_realtime else "schedule"
+            flag: str = " CANCELLED" if p.cancelled else ""
+            number: str = p.line.public_number or p.line.number
             print(
                 f"  {p.line.transport_type or '?'} {number}"
                 f" -> {p.destination}: {p.due_at:%H:%M} ({rt}){flag}"
             )
 
         results = await client.search_stops("Gent Sint-Pieters", max_results=3)
-        found = [f"{s.name} ({s.number})" for s in results]
+        found: list[str] = [f"{s.name} ({s.number})" for s in results]
         print(f"search 'Gent Sint-Pieters': {found}")
 
     print("live check OK")

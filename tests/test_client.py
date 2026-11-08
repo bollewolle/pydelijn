@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 from zoneinfo import ZoneInfo
 
 import aiohttp
@@ -25,7 +26,7 @@ from tests.conftest import (
 BRUSSELS = ZoneInfo("Europe/Brussels")
 
 
-async def test_get_stop(halte):
+async def test_get_stop(halte: dict[str, Any]) -> None:
     """get_stop parses a Halte payload into a Stop."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, payload=halte)
@@ -41,9 +42,12 @@ async def test_get_stop(halte):
 
 
 async def test_get_passages_happy_path_and_caching(
-    halte_realtime, lijn, lijnkleuren, kleuren
-):
-    """Realtime + schedule times parse to aware datetimes; line/colours resolve.
+    halte_realtime: dict[str, Any],
+    lijn: dict[str, Any],
+    lijnkleuren: dict[str, Any],
+    kleuren: dict[str, Any],
+) -> None:
+    """Realtime and schedule times parse to aware datetimes. Line and colours resolve.
 
     The line, colour-code, and colour-map endpoints are each registered only
     once, while the real-time endpoint is registered twice: if the client
@@ -94,7 +98,7 @@ async def test_get_passages_happy_path_and_caching(
             assert second_passages[0].line == passage.line
 
 
-async def test_search_stops(zoek_haltes):
+async def test_search_stops(zoek_haltes: dict[str, Any]) -> None:
     """search_stops parses a HaltesHits payload into a list of Stops."""
     with aioresponses() as mocked:
         mocked.get(ZOEK_HALTES_URL, payload=zoek_haltes)
@@ -107,12 +111,11 @@ async def test_search_stops(zoek_haltes):
     assert stop.entity_number == ENTITY
     assert stop.name == "Heizijde"
     assert stop.municipality == "Gent"
-    # geoCoordinaat arrives as a "lat,lon" string from the search API.
     assert stop.latitude == 51.054302
     assert stop.longitude == 3.717425
 
 
-async def test_get_stops_near(haltes_indebuurt):
+async def test_get_stops_near(haltes_indebuurt: dict[str, Any]) -> None:
     """get_stops_near parses a live-style haltes payload into Stops."""
     with aioresponses() as mocked:
         mocked.get(INDEBUURT_URL, payload=haltes_indebuurt)
@@ -129,7 +132,7 @@ async def test_get_stops_near(haltes_indebuurt):
     assert stop.distance == 42
 
 
-async def test_injected_session_is_not_closed(halte):
+async def test_injected_session_is_not_closed(halte: dict[str, Any]) -> None:
     """close() must never close a session the caller injected."""
     session = aiohttp.ClientSession()
     try:
@@ -143,7 +146,7 @@ async def test_injected_session_is_not_closed(halte):
         await session.close()
 
 
-async def test_self_created_session_is_closed(halte):
+async def test_self_created_session_is_closed(halte: dict[str, Any]) -> None:
     """close() must close a session the client created for itself."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, payload=halte)

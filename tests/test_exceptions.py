@@ -16,7 +16,7 @@ from pydelijn.exceptions import (
 from tests.conftest import HALTE_URL, STOP
 
 
-async def test_401_raises_auth_error():
+async def test_401_raises_auth_error() -> None:
     """A 401 response raises DeLijnAuthError, not a generic error."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, status=401)
@@ -28,7 +28,7 @@ async def test_401_raises_auth_error():
     assert "bad-key" not in message
 
 
-async def test_403_raises_auth_error():
+async def test_403_raises_auth_error() -> None:
     """A 403 response also raises DeLijnAuthError."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, status=403)
@@ -37,7 +37,7 @@ async def test_403_raises_auth_error():
                 await client.get_stop(STOP)
 
 
-async def test_404_raises_not_found_error():
+async def test_404_raises_not_found_error() -> None:
     """A 404 response raises DeLijnNotFoundError for an unknown stop."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, status=404)
@@ -46,7 +46,7 @@ async def test_404_raises_not_found_error():
                 await client.get_stop(STOP)
 
 
-async def test_unexpected_status_raises_response_error():
+async def test_unexpected_status_raises_response_error() -> None:
     """Any other non-200 status raises DeLijnResponseError."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, status=500)
@@ -55,7 +55,7 @@ async def test_unexpected_status_raises_response_error():
                 await client.get_stop(STOP)
 
 
-async def test_timeout_raises_connection_error():
+async def test_timeout_raises_connection_error() -> None:
     """A timeout while calling the API raises DeLijnConnectionError."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, exception=TimeoutError())
@@ -64,7 +64,7 @@ async def test_timeout_raises_connection_error():
                 await client.get_stop(STOP)
 
 
-async def test_client_error_raises_connection_error():
+async def test_client_error_raises_connection_error() -> None:
     """An aiohttp.ClientError while calling the API raises DeLijnConnectionError."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, exception=aiohttp.ClientConnectionError("boom"))
@@ -73,7 +73,7 @@ async def test_client_error_raises_connection_error():
                 await client.get_stop(STOP)
 
 
-async def test_malformed_json_raises_response_error():
+async def test_malformed_json_raises_response_error() -> None:
     """A non-JSON response body raises DeLijnResponseError."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, body="not json at all", status=200)
@@ -82,7 +82,7 @@ async def test_malformed_json_raises_response_error():
                 await client.get_stop(STOP)
 
 
-async def test_no_secrets_in_exception_messages():
+async def test_no_secrets_in_exception_messages() -> None:
     """Exception messages never contain the URL or the subscription key."""
     with aioresponses() as mocked:
         mocked.get(HALTE_URL, status=401)

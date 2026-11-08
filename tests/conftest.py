@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -31,10 +31,10 @@ INDEBUURT_URL = (
 )
 
 
-def load_fixture(name: str) -> Any:
+def load_fixture(name: str) -> dict[str, Any]:
     """Load and deep-copy a JSON fixture from tests/fixtures/<name>.json."""
     data = json.loads((FIXTURES_DIR / f"{name}.json").read_text())
-    return copy.deepcopy(data)
+    return cast("dict[str, Any]", copy.deepcopy(data))
 
 
 @pytest.fixture
