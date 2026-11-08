@@ -111,6 +111,7 @@ async def test_search_stops(zoek_haltes: dict[str, Any]) -> None:
     assert stop.entity_number == ENTITY
     assert stop.name == "Heizijde"
     assert stop.municipality == "Gent"
+    # geoCoordinaat arrives as a "lat,lon" string from the search API.
     assert stop.latitude == 51.054302
     assert stop.longitude == 3.717425
 

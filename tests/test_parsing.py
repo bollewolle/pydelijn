@@ -94,6 +94,7 @@ async def test_top_level_status_cancelled_marks_cancelled(
             passages = await client.get_passages(STOP)
 
     assert passages[0].cancelled is True
+    # Realtime info can still be true even though the ride is cancelled.
     assert passages[0].is_realtime is True
 
 
